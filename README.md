@@ -1,3 +1,26 @@
-# Description
+# Gateway Device Application (Connected Devices)
 
-In this lab module, we focus on configuring your development environments for both Constrained Device Applications (CDA) and Gateway Device Applications (GDA). For CDA development in Python, we ensure Python 3.7 or higher is installed and suggest using the Eclipse IDE with the PyDev plugin. For GDA development in Java, we prioritize the installation of Java 11 or higher and recommend Eclipse as the IDE of choice. These steps lay a robust foundation for your IoT solution development journey, enabling you to seamlessly build and evolve both CDA and GDA components.
+## Lab Module 01
+
+
+### Description
+
+This lab module focuses on establishing the development environment for building Gateway Device Applications (GDA) in Java. It includes the installation of Java 11 or higher, which is a fundamental requirement for GDA development. Recommended the use of the Eclipse IDE for Java development, ensuring a robust foundation for upcoming IoT solution development exercises.
+
+### Code Repository and Branch
+
+
+URL: https://github.com/RKSanjit/piot-java-components/tree/labmodule01
+
+
+
+### Unit Tests Executed
+
+- ConfigUtilTest
+
+
+### Integration Tests Executed
+
+- GatewayDeviceAppTest
+
+
