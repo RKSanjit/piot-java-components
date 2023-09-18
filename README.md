@@ -40,6 +40,7 @@ URL: https://github.com/RKSanjit/piot-java-components/tree/labmodule02
 
 ### UML Design Diagram(s)
 
+![image](https://github.com/RKSanjit/piot-java-components/assets/144634185/ad84c2bc-ce2a-469b-bb28-b86c1fa3b402)
 
 
 
