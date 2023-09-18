@@ -46,9 +46,10 @@ URL: https://github.com/RKSanjit/piot-java-components/tree/labmodule02
 ### Unit Tests Executed
 
 - ConfigUtilTest
+- SystemCpuUtilTaskTest
 - testGetTelemetryValue()
 
 ### Integration Tests Executed
 
-- ConstrainedDeviceAppTest
+- GatewayDeviceAppTest.
 - SystemPerformanceManagerTest
