@@ -84,6 +84,7 @@ public class DeviceDataManagerNoCommsTest
 	{
 		DeviceDataManager devDataMgr = new DeviceDataManager();
 		
+		_Logger.info("Starting DeviceDataManager...");
 		devDataMgr.startManager();
 		
 		try {
@@ -92,6 +93,7 @@ public class DeviceDataManagerNoCommsTest
 			// ignore
 		}
 		
+		_Logger.info("Stopping DeviceDataManager...");
 		devDataMgr.stopManager();
 	}
 	

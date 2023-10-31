@@ -13,65 +13,52 @@ import java.io.Serializable;
 import programmingtheiot.common.ConfigConst;
 
 /**
- * Shell representation of class for student implementation.
- *
+ * SensorData class represents data from a sensor device.
+ * It extends the BaseIotData class and contains information about the sensor's value.
  */
 public class SensorData extends BaseIotData implements Serializable
 {
-	// static
-	
-	
-	// private var's
-	
-    
-	// constructors
-	
-	public SensorData()
-	{
-		super();
-	}
-	
-	public SensorData(int sensorType)
-	{
-		super();
-	}
-	
-	
-	// public methods
-	
-	public float getValue()
-	{
-		return 0.0f;
-	}
-	
-	public void setValue(float val)
-	{
-	}
-	
-	/**
-	 * Returns a string representation of this instance. This will invoke the base class
-	 * {@link #toString()} method, then append the output from this call.
-	 * 
-	 * @return String The string representing this instance, returned in CSV 'key=value' format.
-	 */
-	public String toString()
-	{
-		StringBuilder sb = new StringBuilder(super.toString());
-		
-		sb.append(',');
-		sb.append(ConfigConst.VALUE_PROP).append('=').append(this.getValue());
-		
-		return sb.toString();
-	}
-	
-	
-	// protected methods
-	
-	/* (non-Javadoc)
-	 * @see programmingtheiot.data.BaseIotData#handleUpdateData(programmingtheiot.data.BaseIotData)
-	 */
-	protected void handleUpdateData(BaseIotData data)
-	{
-	}
-	
+    // private variables
+    private float value = ConfigConst.DEFAULT_VAL;
+
+    // constructors
+    public SensorData()
+    {
+        super();
+    }
+
+    public SensorData(int sensorType)
+    {
+        super();
+    }
+
+    // public methods
+    public float getValue()
+    {
+        return this.value;
+    }
+
+    public void setValue(float val)
+    {
+        this.value = val;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder(super.toString());
+
+        sb.append(',');
+        sb.append(ConfigConst.VALUE_PROP).append('=').append(this.getValue());
+
+        return sb.toString();
+    }
+
+    // protected methods
+    @Override
+    protected void handleUpdateData(BaseIotData data)
+    {
+        // Handle update if needed
+    }
 }
+

@@ -15,87 +15,84 @@ import java.util.List;
 import programmingtheiot.common.ConfigConst;
 
 /**
- * Convenience wrapper to store system state data, including location
- * information, action command, state data and a list of the following
- * data items:
- * <p>SystemPerformanceData
- * <p>SensorData
- * 
+ * SystemStateData class represents system state data.
+ * It extends the BaseIotData class and contains information about
+ * the command, system performance data list, and sensor data list.
  */
 public class SystemStateData extends BaseIotData implements Serializable
 {
-	// static
-	
-	
-	// private var's
-	
-    
-    
-	// constructors
-	
-	public SystemStateData()
-	{
-		super();
-	}
-	
-	
-	// public methods
-	
-	public boolean addSensorData(SensorData data)
-	{
-		return false;
-	}
-	
-	public boolean addSystemPerformanceData(SystemPerformanceData data)
-	{
-		return false;
-	}
-	
-	public int getCommand()
-	{
-		return 0;
-	}
-	
-	public List<SensorData> getSensorDataList()
-	{
-		return null;
-	}
-	
-	public List<SystemPerformanceData> getSystemPerformanceDataList()
-	{
-		return null;
-	}
-	
-	public void setCommand(int actionCmd)
-	{
-	}
-	
-	/**
-	 * Returns a string representation of this instance. This will invoke the base class
-	 * {@link #toString()} method, then append the output from this call.
-	 * 
-	 * @return String The string representing this instance, returned in CSV 'key=value' format.
-	 */
-	public String toString()
-	{
-		StringBuilder sb = new StringBuilder(super.toString());
-		
-		sb.append(',');
-		sb.append(ConfigConst.COMMAND_PROP).append('=').append(this.getCommand()).append(',');
-		sb.append(ConfigConst.SENSOR_DATA_LIST_PROP).append('=').append(this.getSensorDataList()).append(',');
-		sb.append(ConfigConst.SYSTEM_PERF_DATA_LIST_PROP).append('=').append(this.getSystemPerformanceDataList());
-		
-		return sb.toString();
-	}
-	
-	
-	// protected methods
-	
-	/* (non-Javadoc)
-	 * @see programmingtheiot.data.BaseIotData#handleUpdateData(programmingtheiot.data.BaseIotData)
-	 */
-	protected void handleUpdateData(BaseIotData data)
-	{
+    // private variables
+    private int command = ConfigConst.DEFAULT_COMMAND;
+    private List<SystemPerformanceData> sysPerfDataList = new ArrayList<>();
+    private List<SensorData> sensorDataList = new ArrayList<>();
+
+    // constructors
+    public SystemStateData()
+    {
+        super();
+        super.setName(ConfigConst.SYS_STATE_DATA);
+    }
+
+    // public methods
+    public boolean addSensorData(SensorData data)
+    {
+        if (data != null)
+        {
+            sensorDataList.add(data);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addSystemPerformanceData(SystemPerformanceData data)
+    {
+        if (data != null)
+        {
+            sysPerfDataList.add(data);
+            return true;
+        }
+        return false;
+    }
+
+    public int getCommand()
+    {
+        return this.command;
+    }
+
+    public List<SensorData> getSensorDataList()
+    {
+        return this.sensorDataList;
+    }
+
+    public List<SystemPerformanceData> getSystemPerformanceDataList()
+    {
+        return this.sysPerfDataList;
+    }
+
+    public void setCommand(int actionCmd)
+    {
+        this.command = actionCmd;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder(super.toString());
+
+        sb.append(',');
+        sb.append(ConfigConst.COMMAND_PROP).append('=').append(this.getCommand()).append(',');
+        sb.append(ConfigConst.SENSOR_DATA_LIST_PROP).append('=').append(this.getSensorDataList()).append(',');
+        sb.append(ConfigConst.SYSTEM_PERF_DATA_LIST_PROP).append('=').append(this.getSystemPerformanceDataList());
+
+        return sb.toString();
+    }
+
+    // protected methods
+    @Override
+    protected void handleUpdateData(BaseIotData data)
+    {
+        //
+
 	}
 	
 }

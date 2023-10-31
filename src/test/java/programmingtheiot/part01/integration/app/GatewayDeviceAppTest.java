@@ -18,6 +18,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import programmingtheiot.gda.app.GatewayDeviceApp;
+import programmingtheiot.gda.app.DeviceDataManager;
+import programmingtheiot.gda.system.SystemPerformanceManager;
 
 /**
  * This test case class contains very basic integration tests for
@@ -33,6 +35,9 @@ public class GatewayDeviceAppTest
 	
 	private static final Logger _Logger =
 		Logger.getLogger(GatewayDeviceAppTest.class.getName());
+	
+    private DeviceDataManager deviceDataManager = null;
+    private SystemPerformanceManager systemPerformanceManager = null;
 	
 
 	// member var's
@@ -65,6 +70,8 @@ public class GatewayDeviceAppTest
 	public void setUp() throws Exception
 	{
 		gda = new GatewayDeviceApp((String[]) null);
+        deviceDataManager = new DeviceDataManager();
+        systemPerformanceManager = new SystemPerformanceManager();
 	}
 	
 	/**
@@ -88,15 +95,33 @@ public class GatewayDeviceAppTest
 	@Test
 	public void testStartAndStopGatewayApp()
 	{
+
+
+
 		this.gda.startApp();
 		
+       _Logger.info("Starting DeviceDataManager...");
+        deviceDataManager.startManager();
+
+        _Logger.info("Starting SystemPerformanceManager...");
+        systemPerformanceManager.startManager();
+		
 		try {
-			Thread.sleep(65000L);
+			Thread.sleep(30000L);
 		} catch (InterruptedException e) {
 			// ignore
 		}
 		
+
+        _Logger.info("Stopping DeviceDataManager...");
+        deviceDataManager.stopManager();
+
+        _Logger.info("Stopping SystemPerformanceManager...");
+        systemPerformanceManager.stopManager();
+        
 		this.gda.stopApp(0);
+		
+
 	}
 	
 }
