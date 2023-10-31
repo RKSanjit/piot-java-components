@@ -1,27 +1,40 @@
 # Gateway Device Application (Connected Devices)
 
-## Lab Module 01
-
+## Lab Module 05
 
 ### Description
 
-This lab module focuses on establishing the development environment for building Gateway Device Applications (GDA) in Java. It includes the installation of Java 11 or higher, which is a fundamental requirement for GDA development. Recommended the use of the Eclipse IDE for Java development, ensuring a robust foundation for upcoming IoT solution development exercises.
+My implementation creates the DeviceDataManager class which will serve as the central hub for managing data flow 
+between the CDA, GDA, and cloud. The DeviceDataManager initializes the SystemPerformanceManager and sets itself 
+as the listener to receive messages.
+
+The DeviceDataManager implements the IDataMessageListener interface, providing skeleton implementations of the 
+four callback methods: handleActuatorCommandResponse, handleIncomingMessage, handleSensorMessage, and handleSystemPerformanceMessage. 
+These will be triggered when data is received from the various endpoints. The manager also contains startManager and stopManager methods 
+to control the module lifecycle.
 
 ### Code Repository and Branch
 
+URL: https://github.com/RKSanjit/piot-java-components/tree/labmodule05
 
-URL: https://github.com/RKSanjit/piot-java-components/tree/labmodule01
+### UML Design Diagram(s)
 
+![mod5 GDA](https://github.com/RKSanjit/piot-java-components/assets/144634185/2d79c55c-82fd-4ecf-a1c5-95ee84ff259b)
 
 
 ### Unit Tests Executed
 
-- ConfigUtilTest
-
+- ActuatorDataTest
+- SensorDataTest
+- SystemPerformanceDataTest
+- SystemStateDataTest
+- DataUtilTest
 
 ### Integration Tests Executed
 
+- SystemPerformanceManagerTest
+- DataIntegrationTest
+- DeviceDataManagerNoCommsTest
 - GatewayDeviceAppTest
 
-
-
+EOF.
