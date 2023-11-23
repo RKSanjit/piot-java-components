@@ -5,6 +5,7 @@
  * found in the LICENSE file at the top level of this repository.
  * 
  * Copyright (c) 2020 by Andrew D. King
+ * 
  */ 
 
 package programmingtheiot.part03.integration.connection;
@@ -32,6 +33,7 @@ import programmingtheiot.gda.connection.*;
  * environment.
  *
  */
+
 public class CoapServerGatewayTest
 {
 	// static

@@ -32,6 +32,7 @@ import programmingtheiot.gda.connection.*;
  * environment.
  *
  */
+
 public class MqttClientControlPacketTest
 {
 	// static
@@ -58,26 +59,69 @@ public class MqttClientControlPacketTest
 	{
 	}
 	
+
+	
 	// test methods
 	
 	@Test
 	public void testConnectAndDisconnect()
 	{
-		// TODO: implement this test
+		_Logger.info("Testing connect and disconnect...");
+		assertTrue(this.mqttClient.connectClient());
+		_Logger.info("Connected to the MQTT broker.");
+		try {
+			Thread.sleep(1000);  // Small delay to ensure connection establishment
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		assertTrue(this.mqttClient.disconnectClient());
+		_Logger.info("Disconnected from the MQTT broker.");
 	}
 	
 	@Test
 	public void testServerPing()
 	{
-		// TODO: implement this test
+		_Logger.info("Testing server ping...");
+		assertTrue(this.mqttClient.connectClient());
+		_Logger.info("Connected to the MQTT broker.");
+		// Assuming a keep-alive interval smaller than this sleep time
+		try {
+			Thread.sleep(2 * this.mqttClient.getKeepAlive());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		// The actual PINGREQ and PINGRESP would have to be validated through logs
+		_Logger.info("Ping should have occurred.");
+		assertTrue(this.mqttClient.disconnectClient());
+		_Logger.info("Disconnected from the MQTT broker after ping test.");
 	}
 	
 	@Test
 	public void testPubSub()
 	{
-		// TODO: implement this test
-		// 
-		// IMPORTANT: be sure to use QoS 1 and 2 to see ALL control packets
+		String topic = ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE.getResourceName();
+		String testMessageQoS1 = "Test message QoS 1";
+		String testMessageQoS2 = "Test message QoS 2";
+		
+		_Logger.info("Testing publish and subscribe with QoS 1 and QoS 2...");
+		assertTrue(this.mqttClient.connectClient());
+		_Logger.info("Connected to the MQTT broker.");
+
+		assertTrue(this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, 1));
+		_Logger.info("Subscribed to " + topic + " with QoS 1.");
+		assertTrue(this.mqttClient.publishMessage(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, testMessageQoS1, 1));
+		_Logger.info("Published message with QoS 1: " + testMessageQoS1);
+		assertTrue(this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE));
+		_Logger.info("Unsubscribed from " + topic + ".");
+
+		assertTrue(this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, 2));
+		_Logger.info("Subscribed to " + topic + " with QoS 2.");
+		assertTrue(this.mqttClient.publishMessage(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, testMessageQoS2, 2));
+		_Logger.info("Published message with QoS 2: " + testMessageQoS2);
+		assertTrue(this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE));
+		_Logger.info("Unsubscribed from " + topic + ".");
+
+		assertTrue(this.mqttClient.disconnectClient());
+		_Logger.info("Disconnected from the MQTT broker after pub/sub test.");
 	}
-	
 }

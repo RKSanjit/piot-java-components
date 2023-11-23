@@ -65,7 +65,9 @@ public class DeviceDataManager implements IDataMessageListener {
         }
 
         if (this.enableMqttClient) {
-            // TODO: implement this in Lab Module 7
+    		this.mqttClient = new MqttClientConnector();
+    		
+    		this.mqttClient.setDataMessageListener(this);
         }
 
         if (this.enableCoapServer) {
@@ -79,6 +81,10 @@ public class DeviceDataManager implements IDataMessageListener {
         if (this.enablePersistenceClient) {
             // TODO: implement this as an optional exercise in Lab Module 5
         }
+        
+    	if (this.enableCoapServer) {
+    		this.coapServer = new CoapServerGateway(this);
+    	}
     }
 
     public DeviceDataManager(boolean enableMqttClient, boolean enableCoapClient,
@@ -142,19 +148,82 @@ public class DeviceDataManager implements IDataMessageListener {
         }
     }
 
-    public void setActuatorDataListener(String name, IActuatorDataListener listener) {
+    public void setActuatorDataListener(String name, IActuatorDataListener listener)
+    {
+    	if (listener != null) {
+    		// for now, just ignore 'name' - if you need more than one listener,
+    		// you can use 'name' to create a map of listener instances
+    		this.actuatorDataListener = listener;
+    	}
     }
 
     public void startManager() {
         if (this.sysPerfMgr != null) {
             this.sysPerfMgr.startManager();
+            
         }
+
+    	if (this.mqttClient != null) {
+    		if (this.mqttClient.connectClient()) {
+    			_Logger.info("Successfully connected MQTT client to broker.");
+    			
+    			// add necessary subscriptions
+    			
+    			// TODO: read this from the configuration file
+    			int qos = ConfigConst.DEFAULT_QOS;
+    			
+    			// TODO: check the return value for each and take appropriate action
+    			this.mqttClient.subscribeToTopic(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE, qos);
+    			this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, qos);
+    			this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, qos);
+    			this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, qos);
+    		} else {
+    			_Logger.severe("Failed to connect MQTT client to broker.");
+    			
+    			// TODO: take appropriate action
+    		}
+    	}
+    	
+    	if (this.enableCoapServer && this.coapServer != null) {
+    		if (this.coapServer.startServer()) {
+    			_Logger.info("CoAP server started.");
+    		} else {
+    			_Logger.severe("Failed to start CoAP server. Check log file for details.");
+    		}
+    	}
     }
 
     public void stopManager() {
         if (this.sysPerfMgr != null) {
             this.sysPerfMgr.stopManager();
         }
+        
+    	if (this.mqttClient != null) {
+    		// add necessary un-subscribes
+    		
+    		// TODO: check the return value for each and take appropriate action
+    		this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE);
+    		this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE);
+    		this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE);
+    		this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE);
+    		
+    		if (this.mqttClient.disconnectClient()) {
+    			_Logger.info("Successfully disconnected MQTT client from broker.");
+    		} else {
+    			_Logger.severe("Failed to disconnect MQTT client from broker.");
+    			
+    			// TODO: take appropriate action
+    		}
+    	}
+    	
+    	if (this.enableCoapServer && this.coapServer != null) {
+    		if (this.coapServer.stopServer()) {
+    			_Logger.info("CoAP server stopped.");
+    		} else {
+    			_Logger.severe("Failed to stop CoAP server. Check log file for details.");
+    		}
+    	}
+        
     }
 
     private void initConnections() {
@@ -165,12 +234,16 @@ public class DeviceDataManager implements IDataMessageListener {
         // Implement data analysis logic here.
         // You may publish data back to the CDA using MQTT or CoAP in Part 03.
         // We'll revisit this in a later module.
+        
+        
     }
 
     private void handleIncomingDataAnalysis(ResourceNameEnum resourceName, SystemStateData data) {
         _Logger.fine("Handling incoming data analysis for system state data.");
         // Implement data analysis logic here.
         // This is a command that the GDA should interpret and handle internally.
+        
+        
     }
 
     private boolean handleUpstreamTransmission(ResourceNameEnum resourceName, String jsonData, int qos) {

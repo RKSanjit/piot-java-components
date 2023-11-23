@@ -77,7 +77,7 @@ public class GatewayDeviceApp
 			try {
 				// TODO: make the 2000L configurable
 				while (true) {
-					Thread.sleep(60000L);
+					Thread.sleep(120000L);
 				}
 			} catch (InterruptedException e) {
 				// ignore

@@ -426,4 +426,15 @@ public class ConfigUtil
 		return isLoaded;
 	}
 	
+	/**
+	 * Returns the keep-alive interval from the configuration file.
+	 * 
+	 * @return int The keep-alive interval in seconds.
+	 */
+	public int getKeepAlive()
+	{
+		ConfigUtil configutil = ConfigUtil.getInstance();
+	    return getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE);
+	}
+	
 }

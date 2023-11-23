@@ -18,7 +18,7 @@ import programmingtheiot.common.ConfigUtil;
 /**
  * Base class for common properties and helper methods for all
  * anticipated parameters and actions shared amongst actuator
- * and sensor data structures within the context of this project.
+ * and sensor data structures.
  *
  */
 public abstract class BaseIotData implements Serializable

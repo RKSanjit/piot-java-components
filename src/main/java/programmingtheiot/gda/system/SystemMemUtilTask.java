@@ -15,10 +15,7 @@ import java.util.logging.Logger;
 
 import programmingtheiot.common.ConfigConst;
 
-/**
- * Shell representation of class for student implementation.
- * 
- */
+
 public class SystemMemUtilTask extends BaseSystemUtilTask
 {
 	// constructors

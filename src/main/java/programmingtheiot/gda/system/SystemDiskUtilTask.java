@@ -13,11 +13,7 @@ import java.util.logging.Logger;
 
 import programmingtheiot.common.ConfigConst;
 
-/**
- * Shell representation of class for student implementation.
- * 
- */
-public class SystemDiskUtilTask extends BaseSystemUtilTask
+ class SystemDiskUtilTask extends BaseSystemUtilTask
 {
     // Add a logger
     private static final Logger logger = Logger.getLogger(SystemDiskUtilTask.class.getName());

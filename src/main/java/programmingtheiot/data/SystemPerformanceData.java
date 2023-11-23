@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 import programmingtheiot.common.ConfigConst;
 
+
 /**
  * SystemPerformanceData class represents system performance data.
  * It extends the BaseIotData class and contains information about
@@ -81,4 +82,5 @@ public class SystemPerformanceData extends BaseIotData implements Serializable
     {
         // Handle update if needed
     }
+
 }
