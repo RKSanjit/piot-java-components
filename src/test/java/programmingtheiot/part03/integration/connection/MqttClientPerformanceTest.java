@@ -24,12 +24,11 @@ import programmingtheiot.data.SensorData;
 import programmingtheiot.gda.connection.MqttClientConnector;
 
 /**
- * This test case class contains very basic integration tests for
- * MqttClientPerformanceTest. It should not be considered complete,
- * but serve as a starting point for the student implementing
- * additional functionality within their Programming the IoT
- * environment.
- *
+ * Integration test class for MqttClientPerformanceTest.
+ * Tests the performance of the MqttClientConnector, particularly focusing
+ * on its efficiency in connecting, disconnecting, and publishing messages
+ * with different QoS levels. This is a basic performance test suite that
+ * can be expanded for more comprehensive IoT environment testing.
  */
 public class MqttClientPerformanceTest
 {
@@ -40,16 +39,17 @@ public class MqttClientPerformanceTest
 	
 	public static final int MAX_TEST_RUNS = 10000;
 	
-	// member var's
+	// Member variable for MQTT client
 	
 	private MqttClientConnector mqttClient = null;
 	
 	
 	// test setup methods
 	
-	/**
-	 * @throws java.lang.Exception
-	 */
+    /**
+     * Sets up resources for each test.
+     * @throws java.lang.Exception
+     */
 	@Before
 	public void setUp() throws Exception
 	{
@@ -57,9 +57,10 @@ public class MqttClientPerformanceTest
 		this.mqttClient = new MqttClientConnector();
 	}
 	
-	/**
-	 * @throws java.lang.Exception
-	 */
+    /**
+     * Cleans up resources after each test.
+     * @throws java.lang.Exception
+     */
 	@After
 	public void tearDown() throws Exception
 	{
@@ -67,9 +68,9 @@ public class MqttClientPerformanceTest
 	
 	// test methods
 	
-	/**
-	 * Test method for {@link programmingtheiot.gda.connection.MqttClientConnector#connectClient()}.
-	 */
+    /**
+     * Test the connect and disconnect speed of the MQTT client.
+     */
 	@Test
 	public void testConnectAndDisconnect()
 	{
@@ -84,39 +85,40 @@ public class MqttClientPerformanceTest
 		_Logger.info("Connect and Disconnect [1]: " + elapsedMillis + " ms");
 	}
 	
-	/**
-	 * Test method for {@link programmingtheiot.gda.connection.MqttClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
-	 */
+    /**
+     * Test the publish speed with QoS 0.
+     */
 	@Test
 	public void testPublishQoS0()
 	{
 		execTestPublish(MAX_TEST_RUNS, 0);
 	}
 	
-	/**
-	 * Test method for {@link programmingtheiot.gda.connection.MqttClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
-	 */
+    /**
+     * Test the publish speed with QoS 1.
+     */
+
 	@Test
 	public void testPublishQoS1()
 	{
 		execTestPublish(MAX_TEST_RUNS, 1);
 	}
 	
-	/**
-	 * Test method for {@link programmingtheiot.gda.connection.MqttClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
-	 */
+	 /**
+     * Test the publish speed with QoS 2.
+     */
 	@Test
 	public void testPublishQoS2()
 	{
 		execTestPublish(MAX_TEST_RUNS, 2);
 	}
 	
-	// private methods
-	
-	/**
-	 * @param maxTestRuns
-	 * @param qos
-	 */
+    // Private helper methods
+    /**
+     * Executes the publish test for a given number of runs and QoS level.
+     * @param maxTestRuns The number of messages to publish.
+     * @param qos The QoS level to use for the messages.
+     */
 	private void execTestPublish(int maxTestRuns, int qos)
 	{
 		assertTrue(this.mqttClient.connectClient());

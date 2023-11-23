@@ -25,29 +25,30 @@ import programmingtheiot.data.*;
 import programmingtheiot.gda.connection.*;
 
 /**
- * This test case class contains very basic integration tests for
- * MqttClientControlPacketTest. It should not be considered complete,
- * but serve as a starting point for the student implementing
- * additional functionality within their Programming the IoT
- * environment.
- *
+ * Integration test class for MqttClientControlPacketTest.
+ * This class tests the MQTT client control packet functionality,
+ * including connecting, disconnecting, server pinging, and publishing/subscribing.
  */
 
 public class MqttClientControlPacketTest
 {
-	// static
+	// static logger
 	
 	private static final Logger _Logger =
 		Logger.getLogger(MqttClientControlPacketTest.class.getName());
 	
 	
-	// member var's
+	 // Member variable for MQTT client
 	
 	private MqttClientConnector mqttClient = null;
 	
 	
 	// test setup methods
 	
+    /**
+     * Sets up resources for each test.
+     * @throws java.lang.Exception
+     */
 	@Before
 	public void setUp() throws Exception
 	{
@@ -57,12 +58,17 @@ public class MqttClientControlPacketTest
 	@After
 	public void tearDown() throws Exception
 	{
+		// Optional cleanup after each test
 	}
 	
 
 	
 	// test methods
 	
+	
+    /**
+     * Test method for connecting and disconnecting the MQTT client.
+     */
 	@Test
 	public void testConnectAndDisconnect()
 	{
@@ -78,6 +84,10 @@ public class MqttClientControlPacketTest
 		_Logger.info("Disconnected from the MQTT broker.");
 	}
 	
+	
+    /**
+     * Test method for validating server ping functionality.
+     */
 	@Test
 	public void testServerPing()
 	{
@@ -96,6 +106,10 @@ public class MqttClientControlPacketTest
 		_Logger.info("Disconnected from the MQTT broker after ping test.");
 	}
 	
+	
+    /**
+     * Test method for validating publish and subscribe functionality with different QoS levels.
+     */
 	@Test
 	public void testPubSub()
 	{

@@ -28,11 +28,11 @@ import programmingtheiot.common.IDataMessageListener;
 import programmingtheiot.common.ResourceNameEnum;
 
 /**
- * Shell representation of class for student implementation.
- * 
+ * This class provides MQTT client connectivity, enabling communication with an MQTT broker.
+ * It encapsulates functionalities such as connecting to the broker, publishing messages,
+ * subscribing to topics, and handling incoming messages. This implementation uses the Eclipse Paho
+ * MQTT library and is designed to be modified and extended for various IoT communication needs.
  */
-
-
 
 public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 {
@@ -57,16 +57,15 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 	
 	// constructors
 	
-	/**
-	 * Default.
-	 * 
-	 */
+
 	public MqttClientConnector()
 	{
 		super();
 		
 		ConfigUtil configUtil = ConfigUtil.getInstance();
 		
+		
+	    // Initialize host and port from the configuration
 		this.host =
 		    configUtil.getProperty(
 		        ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.HOST_KEY, ConfigConst.DEFAULT_HOST);
@@ -82,6 +81,9 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		// NOTE: paho Java client requires a client ID - for now, you
 		// can use the generated client ID; for later exercises, you
 		// should define your own and load it from the config file
+		
+		
+        // Generate a unique client ID and initialize connection options
 		this.clientID = MqttClient.generateClientId();
 		
 		// these are specific to the MQTT connection which will be used during connect
@@ -107,6 +109,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 	
 	// public methods
 	
+	// Connect to MQTT broker
 	@Override
 	public boolean connectClient()
 	{
@@ -133,6 +136,9 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		return false;
 	}
 
+	
+	
+	// Disconnect from MQTT broker
 	@Override
 	public boolean disconnectClient()
 	{
@@ -155,11 +161,15 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		return false;
 	}
 
+	
+	// Check if client is connected
 	public boolean isConnected()
 	{
 		return (this.mqttClient != null && this.mqttClient.isConnected());
 	}
 	
+	
+	// Publish a message to a topic
 	@Override
 	public boolean publishMessage(ResourceNameEnum topicName, String msg, int qos)
 	{
@@ -193,6 +203,8 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 	    return false;
 	}
 
+	
+	// Subscribe to a topic
 	@Override
 	public boolean subscribeToTopic(ResourceNameEnum topicName, int qos)
 	{
@@ -218,7 +230,10 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		
 		return false;
 	}
-
+	
+	
+	
+	// Unsubscribe from a topic
 	@Override
 	public boolean unsubscribeFromTopic(ResourceNameEnum topicName)
 	{
@@ -238,6 +253,9 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		return false;
 	}
 
+	
+	
+	// Set a data message listener
 	@Override
 	public boolean setDataMessageListener(IDataMessageListener listener)
 	{
@@ -249,7 +267,9 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		return false;
 	}
 	
-	// callbacks
+	
+	
+	// MQTT Callback methods
 	
 
     @Override
@@ -308,7 +328,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		// TODO: implement this
 	}
 
-
+	// Retrieves the keep-alive interval for the MQTT connection 
     public int getKeepAlive() {
         ConfigUtil configUtil = ConfigUtil.getInstance();
         return configUtil.getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE);

@@ -24,12 +24,9 @@ import programmingtheiot.common.ResourceNameEnum;
 import programmingtheiot.gda.connection.*;
 
 /**
- * This test case class contains very basic integration tests for
- * MqttClientConnector. It should not be considered complete,
- * but serve as a starting point for the student implementing
- * additional functionality within their Programming the IoT
- * environment.
- *
+ * Integration test class for MqttClientConnector.
+ * This class tests the functionality of MQTT connectivity,
+ * including connection, publishing, subscribing, and disconnection.
  */
 public class MqttClientConnectorTest
 {
@@ -39,7 +36,7 @@ public class MqttClientConnectorTest
 		Logger.getLogger(MqttClientConnectorTest.class.getName());
 	
 	
-	// member var's
+	// Member variables for MQTT client
 	
 	private MqttClientConnector mqttClient = null;
 	
@@ -47,6 +44,7 @@ public class MqttClientConnectorTest
 	// test setup methods
 	
 	/**
+	 * Sets up test resources prior to each test.
 	 * @throws java.lang.Exception
 	 */
 	@Before
@@ -70,6 +68,9 @@ public class MqttClientConnectorTest
 	 */
 	@Test
 	public void testConnectAndDisconnect()
+	
+	// Test for connecting and disconnecting the MQTT client
+	
 	{
 		int delay = ConfigUtil.getInstance().getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE);
 		
@@ -91,6 +92,9 @@ public class MqttClientConnectorTest
 	 */
 	@Test
 	public void testPublishAndSubscribe()
+	// Test for publishing and subscribing to topics using MQTT client
+	
+	
 	{
 		int qos = 0;
 		int delay = ConfigUtil.getInstance().getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE);
@@ -142,6 +146,9 @@ public class MqttClientConnectorTest
 	 */
 //	//@Test
 	public void testPublishAndSubscribeTwoClients()
+	
+	// Test for publishing and subscribing with two separate MQTT clients
+	
 	{
 		int qos = 0;
 		
@@ -187,6 +194,7 @@ public class MqttClientConnectorTest
 	 */
 //	@Test
 	public void testIntegrateWithCdaPublishCdaCmdTopic()
+	// Test for integration with CDA by publishing to a CDA command topic
 	{
 		int qos = 1;
 		
@@ -207,6 +215,8 @@ public class MqttClientConnectorTest
 	 */
 //	@Test
 	public void testIntegrateWithCdaSubscribeCdaMgmtTopic()
+	   // Test for integration with CDA by subscribing to a CDA management topic
+	
 	{
 		int qos = 1;
 		int delay = ConfigUtil.getInstance().getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE);
