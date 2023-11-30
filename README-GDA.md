@@ -1,27 +1,30 @@
 # Gateway Device Application (Connected Devices)
 
-## Lab Module 01
+## Lab Module 08
 
+Be sure to implement all the PIOT-GDA-* issues (requirements) listed at [PIOT-INF-08-001 - Lab Module 08](https://github.com/orgs/programming-the-iot/projects/1#column-10488501).
 
 ### Description
 
-This lab module focuses on establishing the development environment for building Gateway Device Applications (GDA) in Java. It includes the installation of Java 11 or higher, which is a fundamental requirement for GDA development. Recommended the use of the Eclipse IDE for Java development, ensuring a robust foundation for upcoming IoT solution development exercises.
+NOTE: Include two full paragraphs describing your implementation approach by answering the questions listed below.
+
+This implementation integrates a CoAP server into the Gateway Device Application (GDA) using the Eclipse Californium library. It allows the Constrained Device Application (CDA) to send sensor data to the GDA and retrieve actuator commands using CoAP request/response messaging.
+
+The CoAP server functionality is handled by the CoapServerGateway class, which provides an adapter to the Eclipse Californium library's CoapServer. The server manages CoAP resources and routes requests to specific resource handlers that process and respond to GET and PUT requests. Custom resource handlers were implemented to receive sensor data and system performance data from the CDA via PUT requests. Another handler allows the CDA to retrieve pending actuator commands via GET requests and supports observer notifications using CoAP. These CoAP resource handlers interface with the GDA's DeviceDataManager to process data and actuator messages. Overall, this enables CoAP-based integration between the CDA and GDA for sending telemetry and receiving actuator commands.
+
 
 ### Code Repository and Branch
 
 
-URL: https://github.com/RKSanjit/piot-java-components/tree/labmodule01
 
+URL: https://github.com/RKSanjit/piot-java-components/blob/labmodule08
 
+### UML Design Diagram(s)
 
-### Unit Tests Executed
-
-- ConfigUtilTest
-
+![mod8](https://github.com/RKSanjit/book-exercise-docs/assets/144634185/1b221a47-b5a1-42ab-9198-da791cbec4ee)
 
 ### Integration Tests Executed
 
-- GatewayDeviceAppTest
+- CoapServerGatewayTest
 
-
-
+EOF.
