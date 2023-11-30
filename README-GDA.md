@@ -2,11 +2,9 @@
 
 ## Lab Module 08
 
-Be sure to implement all the PIOT-GDA-* issues (requirements) listed at [PIOT-INF-08-001 - Lab Module 08](https://github.com/orgs/programming-the-iot/projects/1#column-10488501).
+
 
 ### Description
-
-NOTE: Include two full paragraphs describing your implementation approach by answering the questions listed below.
 
 This implementation integrates a CoAP server into the Gateway Device Application (GDA) using the Eclipse Californium library. It allows the Constrained Device Application (CDA) to send sensor data to the GDA and retrieve actuator commands using CoAP request/response messaging.
 
