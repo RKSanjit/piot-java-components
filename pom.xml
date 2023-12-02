@@ -54,18 +54,24 @@
 		<dependency>
 			<groupId>org.eclipse.californium</groupId>
 			<artifactId>californium-core</artifactId>
-			<version>3.9.0</version>
+			<version>3.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.californium</groupId>
 			<artifactId>scandium</artifactId>
-			<version>3.9.0</version>
+			<version>3.7.0</version>
 		</dependency>
 		
 		<!--
 			NOTE: These dependencies are optional for use
 			with Lab Module's 05 and 12.
 		-->
+		
+		<dependency>
+		   <groupId>org.slf4j</groupId>
+		   <artifactId>slf4j-simple</artifactId>
+		   <version>1.7.36</version> <!-- Match the version with SLF4J API -->
+		</dependency>
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>

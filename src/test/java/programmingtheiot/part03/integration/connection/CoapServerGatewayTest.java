@@ -77,8 +77,8 @@ public class CoapServerGatewayTest
 	public void testRunSimpleCoapServerGatewayIntegration()
 	{
 		try {
-			String url =
-				ConfigConst.DEFAULT_COAP_PROTOCOL + "://" + ConfigConst.DEFAULT_HOST + ":" + ConfigConst.DEFAULT_COAP_PORT;
+			String url = "coap://localhost:5683";
+				//ConfigConst.DEFAULT_COAP_PROTOCOL + "://" + ConfigConst.DEFAULT_HOST + ":" + ConfigConst.DEFAULT_COAP_PORT;
 			
 			this.csg = new CoapServerGateway(new DefaultDataMessageListener());
 			this.csg.startServer();
