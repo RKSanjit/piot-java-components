@@ -4,8 +4,12 @@
 * It is provided as a simple shell to guide the student and assist with
 * implementation for the Programming the Internet of Things exercises,
 * and designed to be modified by the student as needed.
+<<<<<<< HEAD
 */
  
+=======
+*/ 
+>>>>>>> labmodule08
 package programmingtheiot.gda.connection.handlers;
  
 import java.util.logging.Logger;
@@ -21,10 +25,16 @@ import programmingtheiot.common.ResourceNameEnum;
 import programmingtheiot.data.DataUtil;
 import programmingtheiot.data.SystemPerformanceData;
  
+<<<<<<< HEAD
  
 /**
 * Shell representation of class for student implementation.
 *
+=======
+/**
+*
+* This class is a CoAP resource handler for updating system performance data.
+>>>>>>> labmodule08
 */
 public class UpdateSystemPerformanceResourceHandler extends CoapResource
 {
@@ -50,14 +60,26 @@ public class UpdateSystemPerformanceResourceHandler extends CoapResource
 	@Override
 	public void handleDELETE(CoapExchange context)
 	{
+<<<<<<< HEAD
+=======
+		// TODO: Implement logic for handling DELETE requests
+>>>>>>> labmodule08
 	}
 	@Override
 	public void handleGET(CoapExchange context)
 	{
+<<<<<<< HEAD
+=======
+		// TODO: Implement logic for handling GET requests
+>>>>>>> labmodule08
 	}
 	@Override
 	public void handlePOST(CoapExchange context)
 	{
+<<<<<<< HEAD
+=======
+		// TODO: Implement logic for handling POST requests
+>>>>>>> labmodule08
 	}
 	@Override
 	public void handlePUT(CoapExchange context)
@@ -66,6 +88,7 @@ public class UpdateSystemPerformanceResourceHandler extends CoapResource
 		context.accept();
 		if(this.dataMsgListener != null) {
 			try {
+<<<<<<< HEAD
 				String jsonData = new String(context.getRequestPayload());
 				SystemPerformanceData sysPerfData = DataUtil.getInstance().jsonToSystemPerformanceData(jsonData);
 				this.dataMsgListener.handleSystemPerformanceMessage(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData);
@@ -82,6 +105,33 @@ public class UpdateSystemPerformanceResourceHandler extends CoapResource
 		String msg = "Update system perf data request handled: " + super.getName();
 		context.respond(code, msg);
 	}
+=======
+				// Convert received JSON payload to SystemPerformanceData object
+				String jsonData = new String(context.getRequestPayload());
+				SystemPerformanceData sysPerfData = DataUtil.getInstance().jsonToSystemPerformanceData(jsonData);
+				// Notify the data message listener with the system performance data
+				this.dataMsgListener.handleSystemPerformanceMessage(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData);
+				code = ResponseCode.CHANGED;
+			} catch(Exception e) {
+				// Log a warning if handling PUT request fails
+				_Logger.warning("Failed to handle PUT request. Message: " + e.getMessage());
+				code = ResponseCode.BAD_REQUEST;
+			}
+		} else {
+			// Log an info message if no callback listener is registered
+			_Logger.info("No callback listener for request. Ignoring PUT.");
+			code = ResponseCode.CONTINUE;
+		}
+		// Respond to the client with the result of the request handling
+		String msg = "Update system perf data request handled: " + super.getName();
+		context.respond(code, msg);
+	}
+	/**
+	 * Sets the data message listener for this resource handler.
+	 * 
+	 * @param listener The data message listener to set.
+	 */
+>>>>>>> labmodule08
 	public void setDataMessageListener(IDataMessageListener listener)
 	{
 		if (listener != null) {
