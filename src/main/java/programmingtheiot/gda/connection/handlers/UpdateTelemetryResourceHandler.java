@@ -17,11 +17,13 @@ import programmingtheiot.common.ConfigConst;
 import programmingtheiot.common.ConfigUtil;
 import programmingtheiot.common.IDataMessageListener;
 import programmingtheiot.common.ResourceNameEnum;
+import programmingtheiot.data.ActuatorData;
 import programmingtheiot.data.DataUtil;
 import programmingtheiot.data.SensorData;
 import programmingtheiot.data.SystemPerformanceData;
  
 /**
+* Shell representation of class for student implementation.
 * 
 * This class is a CoAP resource handler for updating telemetry data.
 */
@@ -39,6 +41,7 @@ public class UpdateTelemetryResourceHandler extends CoapResource
 	}
  
 	// static
+	private SensorData sensorData = null;
 	private IDataMessageListener dataMsgListener = null;
 	private static final Logger _Logger =
 		Logger.getLogger(GenericCoapResourceHandler.class.getName());
@@ -50,16 +53,86 @@ public class UpdateTelemetryResourceHandler extends CoapResource
 	public void handleDELETE(CoapExchange context)
 	{
 		// TODO: Implement logic for handling DELETE requests
+		ResponseCode code = ResponseCode.NOT_ACCEPTABLE;
+		context.accept();
+		if(this.dataMsgListener != null) {
+			try {
+				// Convert received JSON payload to SensorData object
+				String jsonData = new String(context.getRequestPayload());
+				SensorData sensorData = DataUtil.getInstance().jsonToSensorData(jsonData);
+				// Notify the data message listener with the sensor data
+				this.dataMsgListener.handleSensorMessage(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData);
+				code = ResponseCode.DELETED;
+			} catch(Exception e) {
+				// Log a warning if handling PUT request fails
+				_Logger.warning("Failed to handle DELETE request. Message: " + e.getMessage());
+				code = ResponseCode.BAD_REQUEST;
+			}
+		} else {
+			// Log an info message if no callback listener is registered
+			_Logger.info("No callback listener for request. Ignoring DELETE.");
+			code = ResponseCode.CONTINUE;
+		}
+		// Respond to the client with the result of the request handling
+		String msg = "Update sensor data request handled: " + super.getName();
+		context.respond(code, msg);
 	}
 	@Override
 	public void handleGET(CoapExchange context)
 	{
 		// TODO: Implement logic for handling GET requests
+		ResponseCode code = ResponseCode.NOT_ACCEPTABLE;
+		String jsonData = "";
+		context.accept();
+		if(this.dataMsgListener != null) {
+			try {
+				// Convert received JSON payload to SensorData object
+				//String jsonData = new String(context.getRequestPayload());
+				jsonData = DataUtil.getInstance().sensorDataToJson(this.sensorData);
+				// Notify the data message listener with the sensor data
+				//this.dataMsgListener.handleSensorMessage(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData);
+				code = ResponseCode.CONTENT;
+			} catch(Exception e) {
+				// Log a warning if handling PUT request fails
+				_Logger.warning("Failed to handle GET request. Message: " + e.getMessage());
+				code = ResponseCode.BAD_REQUEST;
+			}
+		} else {
+			// Log an info message if no callback listener is registered
+			_Logger.info("No callback listener for request. Ignoring GET.");
+			code = ResponseCode.CONTINUE;
+		}
+		// Respond to the client with the result of the request handling
+		String msg = "Update sensor data request handled: " + super.getName();
+		context.respond(code, msg);
 	}
 	@Override
 	public void handlePOST(CoapExchange context)
 	{
 		// TODO: Implement logic for handling POST requests
+		ResponseCode code = ResponseCode.NOT_ACCEPTABLE;
+		context.accept();
+		if(this.dataMsgListener != null) {
+			try {
+				// Convert received JSON payload to SensorData object
+				String jsonData = new String(context.getRequestPayload());
+				SensorData sensorData = DataUtil.getInstance().jsonToSensorData(jsonData);
+				// Notify the data message listener with the sensor data
+				this.dataMsgListener.handleSensorMessage(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData);
+				code = ResponseCode.CREATED;
+			} catch(Exception e) {
+				// Log a warning if handling PUT request fails
+				_Logger.warning("Failed to handle POST request. Message: " + e.getMessage());
+				code = ResponseCode.BAD_REQUEST;
+			}
+		} else {
+			// Log an info message if no callback listener is registered
+			_Logger.info("No callback listener for request. Ignoring POST.");
+			code = ResponseCode.CONTINUE;
+		}
+		// Respond to the client with the result of the request handling
+		String msg = "Update sensor data request handled: " + super.getName();
+		context.respond(code, msg);
 	}
 	@Override
 	public void handlePUT(CoapExchange context)
@@ -72,7 +145,7 @@ public class UpdateTelemetryResourceHandler extends CoapResource
 				String jsonData = new String(context.getRequestPayload());
 				SensorData sensorData = DataUtil.getInstance().jsonToSensorData(jsonData);
 				// Notify the data message listener with the sensor data
-				this.dataMsgListener.handleSensorMessage(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sensorData);
+				this.dataMsgListener.handleSensorMessage(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData);
 				code = ResponseCode.CHANGED;
 			} catch(Exception e) {
 				// Log a warning if handling PUT request fails

@@ -25,6 +25,8 @@ import programmingtheiot.common.ResourceNameEnum;
 import programmingtheiot.data.SystemPerformanceData;
 import programmingtheiot.gda.connection.handlers.GenericCoapResourceHandler;
 import programmingtheiot.gda.connection.handlers.GetActuatorCommandResourceHandler;
+import programmingtheiot.gda.connection.handlers.UpdateSystemPerformanceResourceHandler;
+import programmingtheiot.gda.connection.handlers.UpdateTelemetryResourceHandler;
  
 /**
 * This class represents a CoAP server gateway for handling IoT device communication.
@@ -194,21 +196,41 @@ public class CoapServerGateway
     private void initServer()
     {
         this.coapServer = new CoapServer();
-        initDefaultResource();
+        initDefaultResources();
     }
  
     /**
      * Initialize default resources for the CoAP server.
      */
-    private void initDefaultResource()
+    private void initDefaultResources()
     {
-        // initialize pre-defined resources
-        GetActuatorCommandResourceHandler getActuatorCmdResourceHandler =
-            new GetActuatorCommandResourceHandler(
-                ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE.getResourceType());
-        if (this.dataMsgListener != null) {
-            this.dataMsgListener.setActuatorDataListener(null, getActuatorCmdResourceHandler);
-        }
-        addResource(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, null, getActuatorCmdResourceHandler);
+    	// initialize pre-defined resources
+    	GetActuatorCommandResourceHandler getActuatorCmdResourceHandler =
+    		new GetActuatorCommandResourceHandler(
+    			ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE.getResourceType());
+    	
+    	if (this.dataMsgListener != null) {
+    		this.dataMsgListener.setActuatorDataListener(null, getActuatorCmdResourceHandler);
+    	}
+    	
+    	addResource(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, null, getActuatorCmdResourceHandler);
+    	
+    	UpdateTelemetryResourceHandler updateTelemetryResourceHandler =
+    		new UpdateTelemetryResourceHandler(
+    			ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE.getResourceType());
+    	
+    	updateTelemetryResourceHandler.setDataMessageListener(this.dataMsgListener);
+    	
+    	addResource(
+    		ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, null,	updateTelemetryResourceHandler);
+    	
+    	UpdateSystemPerformanceResourceHandler updateSystemPerformanceResourceHandler =
+    		new UpdateSystemPerformanceResourceHandler(
+    			ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE.getResourceType());
+    	
+    	updateSystemPerformanceResourceHandler.setDataMessageListener(this.dataMsgListener);
+    	
+    	addResource(
+    		ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, null, updateSystemPerformanceResourceHandler);
     }
 }
