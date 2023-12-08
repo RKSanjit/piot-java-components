@@ -46,7 +46,7 @@ securePort     = 8883
 defaultQoS     = 0
 keepAlive      = 60
 enableAuth     = False
-enableCrypt    = False
+enableCrypt    = True
 
 #
 # CoAP client and server configuration information
@@ -68,9 +68,9 @@ enableConfirmedMsgs = True
 deviceLocationID        = gatewaydevice001
 enableLogging           = True
 pollCycleSecs           = 60
-enableMqttClient        = True
-enableCoapServer        = False
-enableCoapClient        = False
+enableMqttClient        = False
+enableCoapServer        = True
+enableCoapClient        = True
 enableCloudClient       = False
 enableSmtpClient        = False
 enablePersistenceClient = False
