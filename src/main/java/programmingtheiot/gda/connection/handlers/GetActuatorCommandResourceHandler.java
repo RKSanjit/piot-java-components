@@ -140,6 +140,9 @@ public class GetActuatorCommandResourceHandler extends CoapResource implements I
 	    // Accept the request
 
 	    context.accept();
+	    if (this.actuatorData == null) {
+	    	this.actuatorData = new ActuatorData();
+	    }
 
 	    // Convert the locally stored ActuatorData to JSON using DataUtil
 

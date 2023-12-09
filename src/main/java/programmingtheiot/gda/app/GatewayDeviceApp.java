@@ -30,7 +30,7 @@ public class GatewayDeviceApp
 	private static final Logger _Logger =
 		Logger.getLogger(GatewayDeviceApp.class.getName());
 	
-	public static final long DEFAULT_TEST_RUNTIME = 60000L;
+	public static final long DEFAULT_TEST_RUNTIME = 300000L;
 
 	
 	// private var's
@@ -77,7 +77,7 @@ public class GatewayDeviceApp
 			try {
 				// TODO: make the 2000L configurable
 				while (true) {
-					Thread.sleep(60000L);
+					Thread.sleep(120000L);
 				}
 			} catch (InterruptedException e) {
 				// ignore
