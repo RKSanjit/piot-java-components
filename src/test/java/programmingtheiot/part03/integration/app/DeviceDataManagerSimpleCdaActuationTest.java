@@ -1,57 +1,52 @@
 package programmingtheiot.part03.integration.app;
-
 import java.util.logging.Logger;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import programmingtheiot.common.ConfigConst;
 import programmingtheiot.common.ResourceNameEnum;
 import programmingtheiot.data.SensorData;
 import programmingtheiot.gda.app.DeviceDataManager;
 import programmingtheiot.common.ConfigUtil;
-
 /**
- * This test case class provides simple integration tests for DeviceDataManager
- * focusing on actuation commands based on humidity sensor data.
- */
+* This test case class provides simple integration tests for DeviceDataManager
+* focusing on actuation commands based on humidity sensor data.
+*/
 public class DeviceDataManagerSimpleCdaActuationTest {
     // static vars
     private static final Logger _Logger = Logger.getLogger(DeviceDataManagerSimpleCdaActuationTest.class.getName());
-
     // member vars
     private DeviceDataManager devDataMgr = null;
-
     // test setup methods
-
     @Before
     public void setUp() throws Exception {
         this.devDataMgr = new DeviceDataManager();
     }
-
     @After
     public void tearDown() throws Exception {
         this.devDataMgr = null;
     }
-
     // test methods
-
     @Test
     public void testSendActuationEventsToCda() {
+    	
+    	DeviceDataManager devDataMgr = new DeviceDataManager();
+    	
+    	devDataMgr.startManager();
+    	
         ConfigUtil cfgUtil = ConfigUtil.getInstance();
-
+        
         float nominalVal = cfgUtil.getFloat(ConfigConst.GATEWAY_DEVICE, "nominalHumiditySetting");
         float lowVal = cfgUtil.getFloat(ConfigConst.GATEWAY_DEVICE, "triggerHumidifierFloor");
         float highVal = cfgUtil.getFloat(ConfigConst.GATEWAY_DEVICE, "triggerHumidifierCeiling");
-        int delay = cfgUtil.getInteger(ConfigConst.GATEWAY_DEVICE, "humidityMaxTimePastThreshold");
-
+        //int delay = cfgUtil.getInteger(ConfigConst.GATEWAY_DEVICE, "humidityMaxTimePastThreshold");
+        int delay = 5000;
         // Test Sequence No. 1
         generateAndProcessHumiditySensorDataSequence(devDataMgr, nominalVal, lowVal, highVal, delay);
-
         // TODO: Add more test sequences if desired.
+        
+        devDataMgr.stopManager();
     }
-
     private void generateAndProcessHumiditySensorDataSequence(DeviceDataManager ddm, float nominalVal, float lowVal, float highVal, int delay) {
         SensorData sd = new SensorData();
         sd.setName("My Test Humidity Sensor");
@@ -85,7 +80,6 @@ public class DeviceDataManagerSimpleCdaActuationTest {
         ddm.handleSensorMessage(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sd);
         waitForSeconds(delay + 1);
     }
-
     private void waitForSeconds(int seconds) {
         try {
             Thread.sleep(seconds * 1000);

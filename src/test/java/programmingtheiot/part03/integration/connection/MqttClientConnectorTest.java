@@ -24,7 +24,7 @@ import programmingtheiot.common.ResourceNameEnum;
 import programmingtheiot.data.ActuatorData;
 import programmingtheiot.data.DataUtil;
 import programmingtheiot.gda.connection.*;
-
+ 
 /**
  * Integration test class for MqttClientConnector.
  * This class tests the functionality of MQTT connectivity,
@@ -68,7 +68,7 @@ public class MqttClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.MqttClientConnector#connectClient()}.
 	 */
-//	@Test
+	@Test
 	public void testConnectAndDisconnect()
 	
 	// Test for connecting and disconnecting the MQTT client
@@ -77,6 +77,11 @@ public class MqttClientConnectorTest
 		int delay = ConfigUtil.getInstance().getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE);
 		
 		assertTrue(this.mqttClient.connectClient());
+		try {
+			Thread.sleep(30000);
+		} catch (Exception e) {
+			// ignore
+		}
 		assertFalse(this.mqttClient.connectClient());
 		
 		try {
@@ -92,7 +97,7 @@ public class MqttClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.MqttClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
 	 */
-//	@Test
+	//@Test
 	public void testPublishAndSubscribe()
 	// Test for publishing and subscribing to topics using MQTT client
 	
@@ -146,7 +151,7 @@ public class MqttClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.MqttClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
 	 */
-//	//@Test
+	//@Test
 	public void testPublishAndSubscribeTwoClients()
 	
 	// Test for publishing and subscribing with two separate MQTT clients
@@ -194,7 +199,7 @@ public class MqttClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.MqttClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
 	 */
-//	@Test
+	//@Test
 	public void testIntegrateWithCdaPublishCdaCmdTopic()
 	// Test for integration with CDA by publishing to a CDA command topic
 	{
@@ -215,7 +220,7 @@ public class MqttClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.MqttClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
 	 */
-//	@Test
+	//@Test
 	public void testIntegrateWithCdaSubscribeCdaMgmtTopic()
 	   // Test for integration with CDA by subscribing to a CDA management topic
 	
