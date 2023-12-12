@@ -25,6 +25,7 @@ public interface ICloudClient
 	 * 
 	 * @return bool True on success, False otherwise.
 	 */
+	//@Override
 	public boolean connectClient();
 
 	/**

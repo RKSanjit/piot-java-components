@@ -11,15 +11,15 @@
 # Cloud client configuration information
 #
 [Cloud.GatewayService]
-credFile       = ./cred/PiotCloudCred.props
-certFile       = ./home/sanjitrk/programmingtheiot/UbidotsCloudCert.pem
+#credFile       = ./cred/PiotCloudCred.props
+certFile       = /home/sanjitrk/programmingtheiot/piot-java-components/certs/UbidotsCloudCert.pem
 host           = industrial.api.ubidots.com
 port           = 1883
 securePort     = 8883
 defaultQoS     = 0
 keepAlive      = 30
 enableCrypt    = True
-baseUrl        = https://things.ubidots.com/api/v1.6/
+#baseUrl        = https://things.ubidots.com/BBUS-654a7e678490eb3940c2437341d527fc6f0/v1.6/
 baseTopic      = /v1.6/devices/ 
 
 #
@@ -67,10 +67,10 @@ enableConfirmedMsgs = True
 deviceLocationID        = gatewaydevice001
 enableLogging           = True
 pollCycleSecs           = 60
-enableMqttClient        = False
-enableCoapServer        = True
-enableCoapClient        = True
-enableCloudClient       = False
+enableMqttClient        = True
+enableCoapServer        = False
+enableCoapClient        = False
+enableCloudClient       = True
 enableSmtpClient        = False
 enablePersistenceClient = False
 enableSystemPerformance = False

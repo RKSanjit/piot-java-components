@@ -72,7 +72,7 @@ public class CloudClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.UbidotsMqttCloudClientConnector#connectClient()}.
 	 */
-//	@Test
+	@Test
 	public void testCloudClientConnectAndDisconnect()
 	{
 		this.cloudClient.setDataMessageListener(new DefaultDataMessageListener());
@@ -104,7 +104,7 @@ public class CloudClientConnectorTest
 		try {
 			// sleep for a minute or so...
 			
-			Thread.sleep(60000L);
+			Thread.sleep(120000L);
 		} catch (Exception e) {
 			// ignore
 		}
@@ -117,12 +117,13 @@ public class CloudClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.UbidotsMqttCloudClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
 	 */
-//	@Test
+	@Test
 	public void testPublishAndSubscribe()
 	{
 		this.cloudClient.setDataMessageListener(new DefaultDataMessageListener());
 		
 		assertTrue(this.cloudClient.connectClient());
+		//this.cloudClient.connectClient();
 		
 		SensorData sensorData = new SensorData();
 		sensorData.setName(ConfigConst.TEMP_SENSOR_NAME);
@@ -133,6 +134,7 @@ public class CloudClientConnectorTest
 		sysPerfData.setMemoryUtilization(39.8f);
 		
 		assertTrue(this.cloudClient.subscribeToCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE));
+		//this.cloudClient.subscribeToCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE);
 		
 		try {
 			// sleep for a few seconds...
@@ -145,6 +147,10 @@ public class CloudClientConnectorTest
 		assertTrue(this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData));
 		assertTrue(this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData));
 		
+		
+		//this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData);
+		//this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData);
+
 		try {
 			// sleep for half a minute or so...
 			
@@ -154,6 +160,7 @@ public class CloudClientConnectorTest
 		}
 		
 		assertTrue(this.cloudClient.unsubscribeFromCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE));
+		//this.cloudClient.unsubscribeFromCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE);
 
 		try {
 			// sleep for a minute or so...
@@ -164,6 +171,8 @@ public class CloudClientConnectorTest
 		}
 
 		assertTrue(this.cloudClient.disconnectClient());
+		//this.cloudClient.disconnectClient();
+
 	}
 	
 }

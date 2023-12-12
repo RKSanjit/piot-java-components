@@ -10,6 +10,7 @@ package programmingtheiot.gda.app;
  
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
  
@@ -28,6 +29,7 @@ import programmingtheiot.data.SystemStateData;
  
 import programmingtheiot.gda.connection.CloudClientConnector;
 import programmingtheiot.gda.connection.CoapServerGateway;
+import programmingtheiot.gda.connection.ICloudClient;
 import programmingtheiot.gda.connection.IPersistenceClient;
 import programmingtheiot.gda.connection.IPubSubClient;
 import programmingtheiot.gda.connection.IRequestResponseClient;
@@ -46,15 +48,19 @@ public class DeviceDataManager implements IDataMessageListener
 	private static final Logger _Logger =
 		Logger.getLogger(DeviceDataManager.class.getName());
 	// private var's
-	private boolean enableMqttClient = true;
+	private String topicPrefix = "";
+	private MqttClientConnector mqttClientConn = null;
+	private IDataMessageListener dataMsgListener = null;
+	
+	private boolean enableMqttClient = false;
 	private boolean enableCoapServer = false;
-	private boolean enableCloudClient = false;
+	private boolean enableCloudClient = true;
 	private boolean enableSmtpClient = false;
 	private boolean enablePersistenceClient = false;
 	private boolean enableSystemPerf = false;
 	private IActuatorDataListener actuatorDataListener = null;
 	private IPubSubClient mqttClient = null;
-	private IPubSubClient cloudClient = null;
+	private ICloudClient cloudClient = null;
 	private IPersistenceClient persistenceClient = null;
 	private IRequestResponseClient smtpClient = null;
 	private CoapServerGateway coapServer = null;
@@ -73,6 +79,8 @@ public class DeviceDataManager implements IDataMessageListener
 	private float   nominalHumiditySetting   = 40.0f;
 	private float   triggerHumidifierFloor   = 30.0f;
 	private float   triggerHumidifierCeiling = 50.0f;
+	
+	private int qosLevel = 1;
 	// constructors
 	public DeviceDataManager()
 	{
@@ -152,12 +160,41 @@ public class DeviceDataManager implements IDataMessageListener
 	@Override
 	public boolean handleIncomingMessage(ResourceNameEnum resourceName, String msg)
 	{
-		if (msg != null) {
-			_Logger.info("Handling incoming generic message: " + msg);
-			return true;
+		if (resourceName != null && msg != null) {
+			try {
+				if (resourceName == ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE) {
+					_Logger.info("Handling incoming ActuatorData message: " + msg);
+					
+					// NOTE: it may seem wasteful to convert to ActuatorData and back while
+					// the JSON data is already available; however, this provides a validation
+					// scheme to ensure the data is actually an 'ActuatorData' instance
+					// prior to sending off to the CDA
+					ActuatorData ad = DataUtil.getInstance().jsonToActuatorData(msg);
+					String jsonData = DataUtil.getInstance().actuatorDataToJson(ad);
+					
+					if (this.mqttClient != null) {
+						// TODO: retrieve the QoS level from the configuration file
+						_Logger.fine("Publishing data to MQTT broker: " + jsonData);
+						return this.mqttClient.publishMessage(resourceName, jsonData, 0);
+					}
+					
+					// TODO: If the GDA is hosting a CoAP server (or a CoAP client that
+					// will connect to the CDA's CoAP server), you can add that logic here
+					// in place of the MQTT client or in addition
+					
+				} else {
+					_Logger.warning("Failed to parse incoming message. Unknown type: " + msg);
+					
+					return false;
+				}
+			} catch (Exception e) {
+				_Logger.log(Level.WARNING, "Failed to process incoming message for resource: " + resourceName, e);
+			}
 		} else {
-			return false;
+			_Logger.warning("Incoming message has no data. Ignoring for resource: " + resourceName);
 		}
+		
+		return false;
 	}
  
 	@Override
@@ -170,6 +207,12 @@ public class DeviceDataManager implements IDataMessageListener
 				_Logger.warning("Error flag set for SensorData instance.");
 			}
 			
+			if (this.cloudClient != null) {
+				// TODO: handle any failures
+				if (this.cloudClient.sendEdgeDataToCloud(resourceName, data)) {
+					_Logger.fine("Sent SensorData upstream to CSP.");
+				}
+			}
 			String jsonData = DataUtil.getInstance().sensorDataToJson(data);
 			
 			_Logger.fine("JSON [SensorData] -> " + jsonData);
@@ -189,6 +232,7 @@ public class DeviceDataManager implements IDataMessageListener
 		} else {
 			return false;
 		}
+		
 	}
  
 	@Override
@@ -198,6 +242,12 @@ public class DeviceDataManager implements IDataMessageListener
 			_Logger.info("Handling system performance message: " + data.getName());
 			if (data.hasError()) {
 				_Logger.warning("Error flag set for SystemPerformanceData instance.");
+			}
+			if (this.cloudClient != null) {
+				// TODO: handle any failures
+				if (this.cloudClient.sendEdgeDataToCloud(resourceName, data)) {
+					_Logger.fine("Sent SystemPerformanceData upstream to CSP.");
+				}
 			}
 			return true;
 		} else {
@@ -270,6 +320,26 @@ public class DeviceDataManager implements IDataMessageListener
 			}
 		}
 	}
+	
+	public void CloudClientConnector()
+	{
+		ConfigUtil configUtil = ConfigUtil.getInstance();
+		
+		this.topicPrefix =
+			configUtil.getProperty(ConfigConst.CLOUD_GATEWAY_SERVICE, ConfigConst.BASE_TOPIC_KEY);
+		
+		// Depending on the cloud service, the topic names may or may not begin with a "/", so this code
+		// should be updated according to the cloud service provider's topic naming conventions
+		if (topicPrefix == null) {
+			topicPrefix = "/";
+		} else {
+			if (! topicPrefix.endsWith("/")) {
+				topicPrefix += "/";
+			}
+		}
+	}
+	
+	
  
 	
 	// private methods
@@ -441,7 +511,8 @@ public class DeviceDataManager implements IDataMessageListener
 			this.coapServer = new CoapServerGateway(this);
 		}
 		if (this.enableCloudClient) {
-			// TODO: implement this in Lab Module 10
+			this.cloudClient = new CloudClientConnector();
+			this.cloudClient.setDataMessageListener(this);
 		}
 		if (this.enablePersistenceClient) {
 			// TODO: implement this as an optional exercise in Lab Module 5
