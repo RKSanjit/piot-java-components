@@ -201,7 +201,7 @@ public class DeviceDataManager implements IDataMessageListener
 	public boolean handleSensorMessage(ResourceNameEnum resourceName, SensorData data)
 	{
 		if (data != null) {
-			_Logger.fine("Handling sensor message: " + data.getName());
+			_Logger.info("Handling sensor message: " + data.getName());
 			
 			if (data.hasError()) {
 				_Logger.warning("Error flag set for SensorData instance.");
@@ -215,7 +215,7 @@ public class DeviceDataManager implements IDataMessageListener
 			}
 			String jsonData = DataUtil.getInstance().sensorDataToJson(data);
 			
-			_Logger.fine("JSON [SensorData] -> " + jsonData);
+			_Logger.info("JSON [SensorData] -> " + jsonData);
 			
 			// TODO: retrieve this from config file
 			int qos = ConfigConst.DEFAULT_QOS;
@@ -267,7 +267,7 @@ public class DeviceDataManager implements IDataMessageListener
 		if (this.sysPerfMgr != null) {
 			_Logger.info("Starting DeviceDataManager...");
 			this.sysPerfMgr.startManager();
-		}
+		}       
 		if (this.mqttClient != null) {
 			if (this.mqttClient.connectClient()) {
 				_Logger.info("Successfully connected MQTT client to broker.");
@@ -275,10 +275,10 @@ public class DeviceDataManager implements IDataMessageListener
 				// TODO: read this from the configuration file
 				int qos = ConfigConst.DEFAULT_QOS;
 				// TODO: check the return value for each and take appropriate action
-				this.mqttClient.subscribeToTopic(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE, qos);
-				this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, qos);
-				this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, qos);
-				this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, qos);
+				//this.mqttClient.subscribeToTopic(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE, qos);
+				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, qos);
+				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, qos);
+				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, qos);
 			} else {
 				_Logger.severe("Failed to connect MQTT client to broker.");
 				// TODO: take appropriate action
@@ -301,10 +301,11 @@ public class DeviceDataManager implements IDataMessageListener
 		if (this.mqttClient != null) {
 			// add necessary un-subscribes
 			// TODO: check the return value for each and take appropriate action
-			this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE);
-			this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE);
-			this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE);
-			this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE);
+			//this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE);
+			//this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE);
+			//this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE);
+			//this.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE);
+			
 			if (this.mqttClient.disconnectClient()) {
 				_Logger.info("Successfully disconnected MQTT client from broker.");
 			} else {
@@ -364,20 +365,20 @@ public class DeviceDataManager implements IDataMessageListener
 		// NOTE: INCOMPLETE and VERY BASIC CODE SAMPLE. Not intended to provide a solution.
 		//
 		
-		_Logger.fine("Analyzing humidity data from CDA: " + data.getLocationID() + ". Value: " + data.getValue());
+		_Logger.info("Analyzing humidity data from CDA: " + data.getLocationID() + ". Value: " + data.getValue());
 		
 		boolean isLow  = data.getValue() < this.triggerHumidifierFloor;
 		boolean isHigh = data.getValue() > this.triggerHumidifierCeiling;
 		
 		if (isLow || isHigh) {
-			_Logger.fine("Humidity data from CDA exceeds nominal range.");
+			_Logger.info("Humidity data from CDA exceeds nominal range.");
 			
 			if (this.latestHumiditySensorData == null) {
 				// set properties then exit - nothing more to do until the next sample
 				this.latestHumiditySensorData = data;
 				this.latestHumiditySensorTimeStamp = getDateTimeFromData(data);
 				
-				_Logger.fine(
+				_Logger.info(
 					"Starting humidity nominal exception timer. Waiting for seconds: " +
 					this.humidityMaxTimePastThreshold);
 				
@@ -389,7 +390,7 @@ public class DeviceDataManager implements IDataMessageListener
 					ChronoUnit.SECONDS.between(
 						this.latestHumiditySensorTimeStamp, curHumiditySensorTimeStamp);
 				
-				_Logger.fine("Checking Humidity value exception time delta: " + diffSeconds);
+				_Logger.info("Checking Humidity value exception time delta: " + diffSeconds);
 				
 				if (diffSeconds >= this.humidityMaxTimePastThreshold) {
 					ActuatorData ad = new ActuatorData();
@@ -437,7 +438,7 @@ public class DeviceDataManager implements IDataMessageListener
 					this.latestHumiditySensorData = null;
 					this.latestHumiditySensorTimeStamp = null;
 				} else {
-					_Logger.fine("Humidifier is still on. Not yet at nominal levels (OK).");
+					_Logger.info("Humidifier is still on. Not yet at nominal levels (OK).");
 				}
 			} else {
 				// shouldn't happen, unless some other logic
@@ -520,7 +521,7 @@ public class DeviceDataManager implements IDataMessageListener
 	}
 	private void handleIncomingDataAnalysis(ResourceNameEnum resourceName, ActuatorData data)
 	{
-		_Logger.fine("handling incoming actuator data analysis");
+		_Logger.info("handling incoming actuator data analysis");
 		_Logger.info("Analyzing incoming actuator data: " + data.getName());
 		if (data.isResponseFlagEnabled()) {
 			// TODO: implement this
@@ -532,11 +533,11 @@ public class DeviceDataManager implements IDataMessageListener
 	}
 	private void handleIncomingDataAnalysis(ResourceNameEnum resourceName, SystemStateData data)
 	{
-		_Logger.fine("handling incoming system state data analysis");
+		_Logger.info("handling incoming system state data analysis");
 	}
 	private boolean handleUpstreamTransmission(ResourceNameEnum resourceName, String jsonData, int qos)
 	{
-		_Logger.fine("handling upstream transmission");
+		_Logger.info("handling upstream transmission");
 		return true;
 	}
 }

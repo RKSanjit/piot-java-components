@@ -61,7 +61,7 @@ public class MqttClientPerformanceTest
 
 		Logger.getLogger(MqttClientPerformanceTest.class.getName());
 
-	public static final int MAX_TEST_RUNS = 10000;
+	
 
 	// Member variable for MQTT client
 
@@ -76,6 +76,8 @@ public class MqttClientPerformanceTest
      * @throws java.lang.Exception
 
      */
+	
+	public static final int MAX_TEST_RUNS = 10000;
 
 	@Before
 
@@ -120,10 +122,12 @@ public class MqttClientPerformanceTest
 	{
 
 		long startMillis = System.currentTimeMillis();
+		
 
 		assertTrue(this.mqttClient.connectClient());
 
 		assertTrue(this.mqttClient.disconnectClient());
+		
 
 		long endMillis = System.currentTimeMillis();
 
@@ -196,67 +200,24 @@ public class MqttClientPerformanceTest
 	private void execTestPublish(int maxTestRuns, int qos)
 
 	{
-
-		/*
-
 		assertTrue(this.mqttClient.connectClient());
-
+		
 		SensorData sensorData = new SensorData();
-
+		
 		String payload = DataUtil.getInstance().sensorDataToJson(sensorData);
-
-		int payloadLen = payload.length();
-
+		
 		long startMillis = System.currentTimeMillis();
-
-		for (int sequenceNo = 1; sequenceNo <= maxTestRuns; sequenceNo++) {
-
-			this.mqttClient.publishMessage(ResourceNameEnum.CDA_MGMT_STATUS_CMD_RESOURCE, payload, qos);
-
-		}
-
-		long endMillis = System.currentTimeMillis();
-
-		long elapsedMillis = endMillis - startMillis;
-
-		assertTrue(this.mqttClient.disconnectClient());
-
-		String msg =
-
-			String.format(
-
-				"\\n\\tTesting Publish: QoS = %s | msgs = %s | payload size = %s | start = %s | end = %s | elapsed = %s",
-
-				qos, maxTestRuns, payloadLen,
-
-				(float) startMillis / 1000, (float) endMillis / 1000, (float) elapsedMillis / 1000);
-
-		_Logger.info(msg);
-
-		*/
-
-		assertTrue(this.mqttClient.connectClient());
-
-		SensorData sensorData = new SensorData();
-
-		String payload = DataUtil.getInstance().sensorDataToJson(sensorData);
-
-		long startMillis = System.currentTimeMillis();
-
+		
 		for (int sequenceNo = 0; sequenceNo < maxTestRuns; sequenceNo++) {
-
 			this.mqttClient.publishMessage(ResourceNameEnum.CDA_MGMT_STATUS_CMD_RESOURCE, payload, qos);
-
 		}
-
+		
 		long endMillis = System.currentTimeMillis();
-
 		long elapsedMillis = endMillis - startMillis;
-
+		
 		assertTrue(this.mqttClient.disconnectClient());
-
+		
 		_Logger.info("Publish message - QoS " + qos + " [" + maxTestRuns + "]: " + elapsedMillis + " ms");
-
 	}
 
 }

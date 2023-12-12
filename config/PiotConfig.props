@@ -12,14 +12,18 @@
 #
 [Cloud.GatewayService]
 #credFile       = ./cred/PiotCloudCred.props
+
 certFile       = /home/sanjitrk/programmingtheiot/piot-java-components/certs/UbidotsCloudCert.pem
+
 host           = industrial.api.ubidots.com
 port           = 1883
 securePort     = 8883
 defaultQoS     = 0
 keepAlive      = 30
+
 enableCrypt    = True
 #baseUrl        = https://things.ubidots.com/BBUS-654a7e678490eb3940c2437341d527fc6f0/v1.6/
+
 baseTopic      = /v1.6/devices/ 
 
 #
@@ -37,8 +41,8 @@ enableCrypt    = True
 # MQTT client configuration information
 #
 [Mqtt.GatewayService]
-credFile       = ./cred/PiotMqttCred.props
-certFile       = ./cert/PiotMqttLocalCertFile.pem
+#credFile       = ./cred/PiotMqttCred.props
+certFile       = /home/sanjitrk/mosquitto-2.0.18/certs/server.crt
 host           = localhost
 port           = 1883
 securePort     = 8883
@@ -46,13 +50,12 @@ defaultQoS     = 0
 keepAlive      = 60
 enableAuth     = False
 enableCrypt    = True
-
 #
 # CoAP client and server configuration information
 #
 [Coap.GatewayService]
 credFile       = ./cred/PiotCoapCred.props
-certFile       = ./cert/PiotCoapLocalCertFile.pem
+certFile       = ./cert/server.crt
 host           = localhost
 port           = 5683
 securePort     = 5684
@@ -70,7 +73,9 @@ pollCycleSecs           = 60
 enableMqttClient        = True
 enableCoapServer        = False
 enableCoapClient        = False
+
 enableCloudClient       = True
+
 enableSmtpClient        = False
 enablePersistenceClient = False
 enableSystemPerformance = False
@@ -83,7 +88,7 @@ enableRunForever 		= True
 handleHumidityChangeOnDevice = True
 
 # min seconds between readings before triggering actuation event
-humidityMaxTimePastThreshold = 10
+humidityMaxTimePastThreshold = 5
 
 # ideal average humidity level (% relative)
 nominalHumiditySetting       = 40.0
