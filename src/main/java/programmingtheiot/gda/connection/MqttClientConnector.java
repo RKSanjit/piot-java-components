@@ -134,7 +134,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		public MqttClientConnector()
 		{
 			this(false);
-			initClientParameters(ConfigConst.MQTT_GATEWAY_SERVICE);
+			initClientParameters(ConfigConst.CLOUD_GATEWAY_SERVICE);
 		}
 	// public methods
 	// Connect to MQTT broker

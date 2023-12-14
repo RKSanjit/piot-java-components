@@ -84,4 +84,10 @@ public interface ICloudClient
 	 * @return bool True on success (if listener is non-null will always be the case), False otherwise.
 	 */
 	public boolean setDataMessageListener(IDataMessageListener listener); 
+	
+	/*public boolean subscribeToTopic(ResourceNameEnum resource,int qos);
+	
+	public boolean unsubscribeToTopic(ResourceNameEnum resource);*/
+	
+	
 }

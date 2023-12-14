@@ -22,16 +22,17 @@ import programmingtheiot.data.SystemPerformanceData;
 * Shell representation of class for student implementation.
 *
 */
-public class CloudClientConnector implements ICloudClient,IConnectionListener 
+public class CloudClientConnector implements ICloudClient, IConnectionListener
 {
 	// static
 	private static final Logger _Logger =
 		Logger.getLogger(CloudClientConnector.class.getName());
 	// private var's
-	private IDataMessageListener dataMsgListener = null;
-	private MqttClientConnector mqttClient = null;
 	private String topicPrefix = "";
-	private int qosLevel=1;
+	private MqttClientConnector mqttClient = null;
+	private IDataMessageListener dataMsgListener = null;
+	//Set 0 or 1 depends on the actual implementation
+	private int qosLevel = 1;
 	// constructors
 	/**
 	 * Default.
@@ -40,155 +41,39 @@ public class CloudClientConnector implements ICloudClient,IConnectionListener
 	public CloudClientConnector()
 	{
 		super();
-        ConfigUtil configUtil = ConfigUtil.getInstance();
-        this.topicPrefix =
-                configUtil.getProperty(ConfigConst.CLOUD_GATEWAY_SERVICE, ConfigConst.BASE_TOPIC_KEY);
-        // Depending on the cloud service, the topic names may or may not begin with a "/", so this code
-        // should be updated according to the cloud service provider's topic naming conventions
-        if (topicPrefix == null) {
-            topicPrefix = "/";
-        } else {
-            if (! topicPrefix.endsWith("/")) {
-                topicPrefix += "/";
-            }
-        }
+		ConfigUtil configUtil = ConfigUtil.getInstance();
+		this.topicPrefix = configUtil.getProperty(
+				ConfigConst.CLOUD_GATEWAY_SERVICE, 
+				ConfigConst.BASE_TOPIC_KEY);
+		if(topicPrefix == null) {
+			topicPrefix = "/";
+		}else {
+			if(!topicPrefix.endsWith("/")) {
+				topicPrefix += "/";
+			}
+		}
 	}
  
 	// public methods
 	@Override
 	public boolean connectClient()
 	{
-		_Logger.info("Cloud Client connecting");
-		if (this.mqttClient == null) {
-			
-			//this.mqttClient = new MqttClientConnector(true);
+		if(this.mqttClient == null) {
 			this.mqttClient = new MqttClientConnector(ConfigConst.CLOUD_GATEWAY_SERVICE);
 			this.mqttClient.setConnectionListener(this);
 		}
 		this.mqttClient.connectClient();
-		
 		return this.mqttClient.isConnected();
 	}
-	
-	
 	@Override
 	public boolean disconnectClient()
 	{
-        _Logger.info("Cloud Client disconnecting");
-        //if(this.mqttClient == null)
-        if (this.mqttClient != null && this.mqttClient.isConnected()) {
-            
-        return mqttClient.disconnectClient();
-        }
-        
-        return false;
-	}
-    /**
-     * check mqtt client connected or not
-     * @return
-     */
-    public boolean isConnected()
-    {
-        return this.mqttClient.isConnected();
-    }
-	@Override
-	public boolean setDataMessageListener(IDataMessageListener listener)
-	{
-        if(listener != null) {
-            this.dataMsgListener = listener;
-            return true;
-        }
-        return false;
-	}
-    /**
-     * Mqtt client send system performance data to cloud
-     */
-    @Override
-    public boolean sendEdgeDataToCloud(ResourceNameEnum resource, SensorData data) {
-        // TODO Auto-generated method stub
-        _Logger.info("Cloud Client send edge data to cloud");
-        
-        if (resource != null && data != null) {
-            String payload = DataUtil.getInstance().sensorDataToJson(data);
-            return publishMessageToCloud(resource, data.getName(), payload);
-        }
-        
-        
-        return false;
-        
-        
-    }
-
-    /**
-     * Mqtt client send system performance data to cloud
-     */
-    @Override
-    public boolean sendEdgeDataToCloud(ResourceNameEnum resource, SystemPerformanceData data) {
-        // TODO Auto-generated method stub
-        _Logger.info("Cloud Client send edge data to cloud");
-        
-        if (resource != null && data != null) {
-            SensorData cpuData = new SensorData();
-            cpuData.updateData(data);
-            cpuData.setName(ConfigConst.CPU_UTIL_NAME);
-            cpuData.setValue(data.getCpuUtilization());
-            boolean cpuDataSuccess = sendEdgeDataToCloud(resource, cpuData);
-            if (! cpuDataSuccess) {
-                _Logger.warning("Failed to send CPU utilization data to cloud service.");
-            }
-            SensorData memData = new SensorData();
-            memData.updateData(data);
-            memData.setName(ConfigConst.MEM_UTIL_NAME);
-            memData.setValue(data.getMemoryUtilization());
-            boolean memDataSuccess = sendEdgeDataToCloud(resource, memData);
-            if (! memDataSuccess) {
-                _Logger.warning("Failed to send memory utilization data to cloud service.");
-            }
-            return (cpuDataSuccess == memDataSuccess);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean subscribeToCloudEvents(ResourceNameEnum resource)
-    {
-    	boolean success = false;
-    	
-    	String topicName = null;
-    	
-    	if (this.mqttClient != null && this.mqttClient.isConnected()) {
-    		topicName = createTopicName(resource);
-    		
-    		this.mqttClient.subscribeToTopic(topicName, this.qosLevel);
-    		
-    		success = true;
-    	} else {
-    		_Logger.warning("Subscription methods only available for MQTT. No MQTT connection to broker. Ignoring. Topic: " + topicName);
-    	}
-    	
-    	return success;
-    }
-	@Override
-	
-	public boolean unsubscribeFromCloudEvents(ResourceNameEnum resource)
-	{
-		boolean success = false;
-		
-		String topicName = null;
-		
-		if (this.mqttClient != null && this.mqttClient.isConnected()) {
-			topicName = createTopicName(resource);
-			
-			this.mqttClient.unsubscribeFromTopic(topicName);
-			
-			success = true;
-		} else {
-			_Logger.warning("Unsubscribe method only available for MQTT. No MQTT connection to broker. Ignoring. Topic: " + topicName);
+		//check whether this.mqttClient is empty, if yes, disconnect.
+		if(this.mqttClient != null && this.mqttClient.isConnected()) {
+			return this.mqttClient.disconnectClient();
 		}
-		
-		return success;
+		return false;
 	}
- 
 	@Override
 	public void onConnect()
 	{
@@ -202,23 +87,14 @@ public class CloudClientConnector implements ICloudClient,IConnectionListener
 		ad.setAsResponse();
 		ad.setName(ConfigConst.LED_ACTUATOR_NAME);
 		ad.setValue((float) -1.0); // NOTE: this just needs to be an invalid actuation value
-		//String ledTopic = createTopicName(leml.getResource().getDeviceName(), ad.getName());
-		//_Logger.info(ledListener.getResource().getDeviceName());
-		//_Logger.info(ad.getName());
-		_Logger.info(createTopicName(ledListener.getResource().getDeviceName(), ad.getName()));
+ 
+
 		String ledTopic = createTopicName(ledListener.getResource().getDeviceName(), ad.getName());
-		//_Logger.info("ledTopic", ledListener.getResource().getDeviceName());
 		String adJson = DataUtil.getInstance().actuatorDataToJson(ad);
-		//_Logger.info(adJson);
-		this.publishMessageToCloud(null,ledTopic, adJson);
-		
-		try {
-			Thread.sleep(1000);
-		}
-		catch(InterruptedException e){
-			
-			
-		}
+		this.publishMessageToCloud(ledTopic,adJson);
+		SystemPerformanceData sysPerfData = new SystemPerformanceData();
+		this.subscribeToCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE);
+		this.sendEdgeDataToCloud(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData);
 		this.mqttClient.subscribeToTopic(ledTopic, this.qosLevel, ledListener);
 	}
 	@Override
@@ -226,7 +102,129 @@ public class CloudClientConnector implements ICloudClient,IConnectionListener
 	{
 		_Logger.info("MQTT client disconnected. Nothing else to do.");
 	}
+	@Override
+	public boolean setDataMessageListener(IDataMessageListener listener)
+	{
+		if(listener != null) {
+			this.dataMsgListener = listener;
+			return true;
+		}
+		return false;
+	}
+	@Override
+	public boolean sendEdgeDataToCloud(ResourceNameEnum resource, SensorData data)
+	{
+		if(resource != null && data != null) {
+			String payload = DataUtil.getInstance().sensorDataToJson(data);
+			_Logger.info("payload --> ");
+			_Logger.info(payload);
+			return publishMessageToCloud(resource, data.getName(),payload);
+		}
+		return false;
+	}
+	@Override
+	public boolean sendEdgeDataToCloud(ResourceNameEnum resource, SystemPerformanceData data)
+	{
+		if (resource != null && data != null) {
+			SensorData cpuData = new SensorData();
+			cpuData.updateData(data);
+			cpuData.setName(ConfigConst.CPU_UTIL_NAME);
+			cpuData.setValue(data.getCpuUtilization());
+			boolean cpuDataSuccess = sendEdgeDataToCloud(resource, cpuData);
+			if (! cpuDataSuccess) {
+				_Logger.warning("Failed to send CPU utilization data to cloud service.");
+			}
+			SensorData memData = new SensorData();
+			memData.updateData(data);
+			memData.setName(ConfigConst.MEM_UTIL_NAME);
+			memData.setValue(data.getMemoryUtilization());
+			boolean memDataSuccess = sendEdgeDataToCloud(resource, memData);
+			if (! memDataSuccess) {
+				_Logger.warning("Failed to send memory utilization data to cloud service.");
+			}
+			_Logger.info("cpuDataSuccess --> ");
+			System.out.println(cpuDataSuccess);
+			_Logger.info("memDataSuccess --> ");
+			System.out.println(memDataSuccess);
+			return (cpuDataSuccess == memDataSuccess);
+		}
+		return false;
+	}
+	@Override
+	public boolean subscribeToCloudEvents(ResourceNameEnum resource)
+	{
+		boolean success = false;
+		String topicName = null;
+		if (this.mqttClient != null && this.mqttClient.isConnected()) {
+			topicName = createTopicName(resource);
+			this.mqttClient.subscribeToTopic(topicName, this.qosLevel);
+			success = true;
+		} else {
+			_Logger.warning("Subscription methods only available for MQTT. No MQTT connection to broker. Ignoring. Topic: " + topicName);
+		}
+		return success;
+	}
+	@Override
+	public boolean unsubscribeFromCloudEvents(ResourceNameEnum resource)
+	{
+		boolean success = false;
+		String topicName = null;
+		if (this.mqttClient != null && this.mqttClient.isConnected()) {
+			topicName = createTopicName(resource);
+			this.mqttClient.unsubscribeFromTopic(topicName);
+			success = true;
+		} else {
+			_Logger.warning("Unsubscribe method only available for MQTT. No MQTT connection to broker. Ignoring. Topic: " + topicName);
+		}
+		return success;
+	}
+ 
 	// private methods
+	private String createTopicName(ResourceNameEnum resource)
+	{
+		return createTopicName(resource.getDeviceName(), resource.getResourceType());
+	}
+	private String createTopicName(ResourceNameEnum resource, String itemName)
+	{
+		return (createTopicName(resource) + "-" + itemName).toLowerCase();
+	}
+	private String createTopicName(String deviceName, String resourceTypeName)
+	{
+		StringBuilder buf = new StringBuilder();
+		if (deviceName != null && deviceName.trim().length() > 0) {
+			buf.append(topicPrefix).append(deviceName);
+		}
+		if (resourceTypeName != null && resourceTypeName.trim().length() > 0) {
+			buf.append('/').append(resourceTypeName);
+		}
+		return buf.toString().toLowerCase();
+	}
+	private boolean publishMessageToCloud(ResourceNameEnum resource, String itemName, String  payload) {
+		String topicName = createTopicName(resource) + "-" + itemName;
+		try {
+			_Logger.finest("Publishing payload value(s) to CSP: " + topicName);
+ 
+			this.mqttClient.publishMessage(topicName, payload.getBytes(), this.qosLevel);
+			try {
+				Thread.sleep(1000);
+			}catch(Exception e) {
+			}
+			return true;
+		}catch(Exception e){
+			_Logger.warning("Failed to publish message to CSP: " + topicName);
+		}
+		return false;
+	}
+	private boolean publishMessageToCloud(String topicName, String  payload) {
+		try {
+			_Logger.finest("Publishing payload value(s) to CSP: " + topicName);
+			this.mqttClient.publishMessage(topicName, payload.getBytes(), this.qosLevel);
+			return true;
+		}catch(Exception e){
+			_Logger.warning("Failed to publish message to CSP: " + topicName);
+		}
+		return false;
+	}
 	private class LedEnablementMessageListener implements IMqttMessageListener
 	{
 		private IDataMessageListener dataMsgListener = null;
@@ -276,51 +274,5 @@ public class CloudClientConnector implements ICloudClient,IConnectionListener
 			}
 		}
 	}
-	private String createTopicName(ResourceNameEnum resource)
-	{
-		return createTopicName(resource.getDeviceName(), resource.getResourceType());
-	}
-	private String createTopicName(ResourceNameEnum resource, String itemName)
-	{
-		return (createTopicName(resource) + "-" + itemName).toLowerCase();
-	}
-	private String createTopicName(String deviceName, String resourceTypeName)
-	{
-		StringBuilder buf = new StringBuilder();
-		if (deviceName != null && deviceName.trim().length() > 0) {
-			buf.append(topicPrefix).append(deviceName);
-		}
-		if (resourceTypeName != null && resourceTypeName.trim().length() > 0) {
-			buf.append('/').append(resourceTypeName);
-		}
-		return buf.toString().toLowerCase();
-	}
-    /**
-     * mqtt client publish message to cloud
-     * @param resource
-     * @param itemName
-     * @param payload
-     * @return
-     */
-    private boolean publishMessageToCloud(ResourceNameEnum resource, String itemName, String payload)
-    {
-        String topicName = createTopicName(resource) + "-" + itemName;
-        try {
-            _Logger.finest("Publishing payload value(s) to Ubidots: " + topicName);
-            this.mqttClient.publishMessage(topicName, payload.getBytes(), this.qosLevel);
-            
-            try {
-            	Thread.sleep(1000);
-            }
-            catch(InterruptedException e) {
-            	
-            }
-            
-            return true;
-        } catch (Exception e) {
-            _Logger.warning("Failed to publish message to Ubidots: " + topicName);
-        }
-        return false;
-    }
- 
+
 }
