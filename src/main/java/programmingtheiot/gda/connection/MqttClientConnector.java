@@ -546,7 +546,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 
     			new ActuatorResponseMessageListener(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, this.dataMsgListener));
 
-    		/*_Logger.info("Subscribing to topic: " + ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE.getResourceName());
+    		_Logger.info("Subscribing to topic: " + ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE.getResourceName());
 
     		this.mqttClient.subscribe(
 
@@ -556,7 +556,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 
     			new ActuatorResponseMessageListener(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE, this.dataMsgListener));
 
-    		*/
+    		
     		_Logger.info("Subscribing to topic: " + ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE.getResourceName());
 
     		this.mqttClient.subscribe(

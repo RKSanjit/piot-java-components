@@ -10,6 +10,7 @@ package programmingtheiot.gda.connection;
 
 import programmingtheiot.common.IDataMessageListener;
 import programmingtheiot.common.ResourceNameEnum;
+import programmingtheiot.data.SensorData;
 
 /**
  * Interface contract for pub/sub clients.
@@ -75,5 +76,7 @@ public interface IPubSubClient
 	 * messages, such as those received from a subscription event.
 	 * @return bool True on success (if listener is non-null will always be the case), False otherwise.
 	 */
-	public boolean setDataMessageListener(IDataMessageListener listener); 
+	public boolean setDataMessageListener(IDataMessageListener listener);
+
+
 }

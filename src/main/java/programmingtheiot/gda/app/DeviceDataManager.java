@@ -29,7 +29,7 @@ import programmingtheiot.data.SystemStateData;
 import programmingtheiot.gda.connection.CloudClientConnector;
 import programmingtheiot.gda.connection.CoapServerGateway;
 import programmingtheiot.gda.connection.IPersistenceClient;
-import programmingtheiot.gda.connection.IPubSubClient;
+import programmingtheiot.gda.connection.IPubSubClient; 
 import programmingtheiot.gda.connection.IRequestResponseClient;
 import programmingtheiot.gda.connection.MqttClientConnector;
 import programmingtheiot.gda.connection.RedisPersistenceAdapter;
@@ -169,6 +169,7 @@ public class DeviceDataManager implements IDataMessageListener
 			if (data.hasError()) {
 				_Logger.warning("Error flag set for SensorData instance.");
 			}
+			
 			
 			String jsonData = DataUtil.getInstance().sensorDataToJson(data);
 			
