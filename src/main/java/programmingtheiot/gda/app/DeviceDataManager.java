@@ -173,8 +173,6 @@ public class DeviceDataManager implements IDataMessageListener
 		} else {
 			return false;
 		}
-		
-		
 	}
 	@Override
 	public boolean handleSensorMessage(ResourceNameEnum resourceName, SensorData data)
@@ -260,7 +258,20 @@ public class DeviceDataManager implements IDataMessageListener
 				// TODO: read this from the configuration file
 				int qos = ConfigConst.DEFAULT_QOS;
 				// TODO: check the return value for each and take appropriate action
+				try {
+					// sleep for half a minute or so...
+					Thread.sleep(30000L);
+				} catch (Exception e) {
+					// ignore
+				}
 				this.cloudClient.subscribeToCloudEvents(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE);
+				
+				try {
+					// sleep for half a minute or so...
+					Thread.sleep(30000L);
+				} catch (Exception e) {
+					// ignore
+				}
 				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, qos);
 				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, qos);
 				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, qos);
@@ -302,7 +313,20 @@ public class DeviceDataManager implements IDataMessageListener
 			// TODO: read this from the configuration file
 			//int qos = ConfigConst.DEFAULT_QOS;
 			// TODO: check the return value for each and take appropriate action
-			this.cloudClient.subscribeToCloudEvents(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE);
+			try {
+				// sleep for half a minute or so...
+				Thread.sleep(30000L);
+			} catch (Exception e) {
+				// ignore
+			}
+			this.cloudClient.unsubscribeFromCloudEvents(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE);
+			
+			try {
+				// sleep for half a minute or so...
+				Thread.sleep(30000L);
+			} catch (Exception e) {
+				// ignore
+			}
 			//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, qos);
 			//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, qos);
 			//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, qos);

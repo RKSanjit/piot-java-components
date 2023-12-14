@@ -60,11 +60,15 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 	{
 		if(this.mqttClient == null) {
 			this.mqttClient = new MqttClientConnector(ConfigConst.CLOUD_GATEWAY_SERVICE);
-			this.mqttClient.setConnectionListener(this);
+			//this.mqttClient.setConnectionListener(this);
 		}
 		this.mqttClient.connectClient();
 		return this.mqttClient.isConnected();
+		
+		
 	}
+
+	
 	@Override
 	public boolean disconnectClient()
 	{
@@ -92,9 +96,24 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 		String ledTopic = createTopicName(ledListener.getResource().getDeviceName(), ad.getName());
 		String adJson = DataUtil.getInstance().actuatorDataToJson(ad);
 		this.publishMessageToCloud(ledTopic,adJson);
+		
+		try {
+			Thread.sleep(30000);
+		}
+		catch (InterruptedException e ) {
+			
+		}
 		SystemPerformanceData sysPerfData = new SystemPerformanceData();
 		this.subscribeToCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE);
+		
+		try {
+			Thread.sleep(30000);
+		}
+		catch (InterruptedException e ) {
+			
+		}
 		this.sendEdgeDataToCloud(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData);
+		
 		this.mqttClient.subscribeToTopic(ledTopic, this.qosLevel, ledListener);
 	}
 	@Override

@@ -135,7 +135,14 @@ public class CloudClientConnectorTest
 		}
 		//assertTrue(this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData));
 		//assertTrue(this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData));
+		
 		this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData);
+		try {
+			// sleep for half a minute or so...
+			Thread.sleep(30000L);
+		} catch (Exception e) {
+			// ignore
+		}
 		this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData);
 		try {
 			// sleep for half a minute or so...

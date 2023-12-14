@@ -67,7 +67,7 @@ securePort     = 58
 
 enableAuth     = False
 
-enableCrypt    = True
+enableCrypt    = False
 
 #
 
@@ -91,9 +91,9 @@ defaultQoS     = 0
 
 keepAlive      = 60
 
-enableAuth     = True
+enableAuth     = False
 
-enableCrypt    = True
+enableCrypt    = False
 
 #
 

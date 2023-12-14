@@ -269,34 +269,64 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 
     @Override
     public void connectComplete(boolean reconnect, String serverURI) {
-        _Logger.info("Connection to broker is complete. Reconnect: " + reconnect + ", Server URI: " + serverURI);
+       // _Logger.info("Connection to broker is complete. Reconnect: " + reconnect + ", Server URI: " + serverURI);
     	_Logger.info("MQTT connection successful (is reconnect = " + reconnect + "). Broker: " + serverURI);
+    	
     	int qos = 1;
-    	try {
-    		if (! this.useCloudGatewayConfig) {
+    	
+    	_Logger.info("Use cloud gatewayConfig set to: "+ this.useCloudGatewayConfig);
+    	
+    	
+    
+    	if (! this.useCloudGatewayConfig) {
+    		
+    		try {
     			_Logger.info("Subscribing to topic: " + ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE.getResourceName());
+    		
     			this.mqttClient.subscribe(
     				ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE.getResourceName(),
     				qos,
     				new ActuatorResponseMessageListener(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, this.dataMsgListener));
+    		} catch(MqttException e){
+    			_Logger.warning("Failed to subscribe to CDA actuator response  topic.");
+    		}
+    		
+    		
+    		try {
     			_Logger.info("Subscribing to topic: " + ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE.getResourceName());
         		this.mqttClient.subscribe(
         			ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE.getResourceName(),
         			qos,
-        			new ActuatorResponseMessageListener(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, this.dataMsgListener));
+        			new SensorDataMessageListener(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, this.dataMsgListener));
+        		
+    		} catch (MqttException e) {
+    			_Logger.warning("Failed to subscribe to CDA sensor data topic.");
+    		}
+        	
+    		
+    		try {
         		_Logger.info("Subscribing to topic: " + ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE.getResourceName());
         		this.mqttClient.subscribe(
         			ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE.getResourceName(),
         			qos,
-        			new ActuatorResponseMessageListener(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, this.dataMsgListener));
-    		}
-    	} catch (MqttException e) {
-    		_Logger.warning("Failed to subscribe to CDA actuator response topic.");
-    	}
+        			new SystemPerformanceDataMessageListener(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, this.dataMsgListener));
+    		} catch (MqttException e) {
+        		_Logger.warning("Failed to subscribe to CDA actuator response topic.");
+        	}
+    	 
     	if (this.connListener != null) {
     		this.connListener.onConnect();
-    	}
+    	}}
     }
+		
+	
+	
+		
+		
+		
+		
+		
+		
     @Override
     public void connectionLost(Throwable t) {
         _Logger.warning("Connection to broker is lost. Cause: " + t.getMessage());
@@ -336,9 +366,12 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 			configUtil.getProperty(
 				configSectionName, ConfigConst.CERT_FILE_KEY);
 		// NOTE: updated from Lab Module 07 - attempt to load clientID from configuration file
-		this.clientID =
-			configUtil.getProperty(
-				ConfigConst.GATEWAY_DEVICE, ConfigConst.DEVICE_LOCATION_ID_KEY, MqttClient.generateClientId());
+		//this.clientID =
+			//configUtil.getProperty(
+				//ConfigConst.GATEWAY_DEVICE, ConfigConst.DEVICE_LOCATION_ID_KEY, MqttClient.generateClientId());
+		
+		this.clientID = MqttClient.generateClientId();
+		
 		// these are specific to the MQTT connection which will be used during connect
 		this.persistence = new MemoryPersistence();
 		this.connOpts    = new MqttConnectOptions();
