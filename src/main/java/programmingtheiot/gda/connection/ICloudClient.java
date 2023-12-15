@@ -10,6 +10,7 @@ package programmingtheiot.gda.connection;
 
 import programmingtheiot.common.IDataMessageListener;
 import programmingtheiot.common.ResourceNameEnum;
+import programmingtheiot.data.ActuatorData;
 import programmingtheiot.data.SensorData;
 import programmingtheiot.data.SystemPerformanceData;
 
@@ -25,6 +26,7 @@ public interface ICloudClient
 	 * 
 	 * @return bool True on success, False otherwise.
 	 */
+	//@Override
 	public boolean connectClient();
 
 	/**
@@ -41,10 +43,10 @@ public interface ICloudClient
 	 * for the cloud service, and use the underlying implementation to 
 	 * 
 	 * @param resource The resource enum to use for this send request.
-	 * @param data The data instance to publish to the remote cloud service.
+	 * @param sensorData The data instance to publish to the remote cloud service.
 	 * @return bool True on success, False otherwise.
 	 */
-	public boolean sendEdgeDataToCloud(ResourceNameEnum resource, SensorData data);
+	public boolean sendEdgeDataToCloud(ResourceNameEnum resource, SensorData sensorData);
 
 	/**
 	 * Attempts to send the given data instance to the remote cloud service.
@@ -83,4 +85,13 @@ public interface ICloudClient
 	 * @return bool True on success (if listener is non-null will always be the case), False otherwise.
 	 */
 	public boolean setDataMessageListener(IDataMessageListener listener); 
+	
+	public boolean sendEdgeDataToCloud(ResourceNameEnum resource, ActuatorData data);
+
+	
+	/*public boolean subscribeToTopic(ResourceNameEnum resource,int qos);
+	
+	public boolean unsubscribeToTopic(ResourceNameEnum resource);*/
+	
+	
 }
