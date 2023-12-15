@@ -93,7 +93,7 @@ keepAlive      = 60
 
 enableAuth     = False
 
-enableCrypt    = False
+enableCrypt    = True
 
 #
 
