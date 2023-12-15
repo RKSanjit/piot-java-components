@@ -56,6 +56,9 @@ public class ConfigConst
 	public static final String GATEWAY_DEVICE     = GATEWAY + DEVICE;
 	public static final String GATEWAY_SERVICE    = GATEWAY + SERVICE;
 	public static final String CLOUD_SERVICE      = CLOUD + SERVICE;
+	
+	public static final String LED_ACTUATOR_CMD_TOPIC = "ledActuatorCmdTopic"; // Replace with the actual topic name
+
 
 	/*****
 	 * Property Names

@@ -135,7 +135,7 @@ public class DeviceDataManager implements IDataMessageListener
 			return false;
 		}
 	}
-	@Override
+/*	@Override
 	public boolean handleIncomingMessage(ResourceNameEnum resourceName, String msg)
 	{
 		if (resourceName != null && msg != null) {
@@ -170,10 +170,65 @@ public class DeviceDataManager implements IDataMessageListener
 		if (msg != null) {
 			_Logger.info("Handling incoming generic message: " + msg);
 			return true;
-		} else {
+		} 
+		
+		
+		
+		else {
 			return false;
 		}
+	}*/
+	
+	
+	@Override
+	public boolean handleIncomingMessage(ResourceNameEnum resourceName, String msg) {
+	    if (resourceName != null && msg != null) {
+	        try {
+	            if (resourceName == ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE) {
+	                _Logger.info("Handling incoming ActuatorData message: " + msg);
+	                
+	                ActuatorData actuatorData = DataUtil.getInstance().jsonToActuatorData(msg);
+	                
+	                if (actuatorData != null && actuatorData.getTypeID() == ConfigConst.LED_ACTUATOR_TYPE) {
+	                    // Determine the action (ON or OFF) based on the actuator command
+	                    if (actuatorData.getCommand() == ConfigConst.ON_COMMAND) {
+	                        actuatorData.setStateData("ON");
+	                    } else if (actuatorData.getCommand() == ConfigConst.OFF_COMMAND) {
+	                        actuatorData.setStateData("OFF");
+	                    }
+
+	                    // Convert the updated ActuatorData back to JSON
+	                    String jsonData = DataUtil.getInstance().actuatorDataToJson(actuatorData);
+
+	                    // Publish the ActuatorData to the MQTT broker
+	                    if (this.mqttClient != null) {
+	                        _Logger.fine("Publishing actuator data to MQTT broker: " + jsonData);
+	                        return this.mqttClient.publishMessage(resourceName, jsonData, 0);
+	                    }
+	                } else {
+	                    _Logger.warning("Received message is not for LED Actuator. Ignoring.");
+	                    return false;
+	                }
+	            } else {
+	                // Logic for handling other types of messages
+	                _Logger.info("Handling incoming generic message: " + msg);
+	                return true; // Adjust based on how you handle other messages
+	            }
+	        } catch (Exception e) {
+	            _Logger.log(Level.WARNING, "Failed to process incoming message for resource: " + resourceName, e);
+	            return false;
+	        }
+	    } else {
+	        _Logger.warning("Incoming message has no data. Ignoring for resource: " + resourceName);
+	        return false;
+	    }
+	    
+	    return true;
 	}
+
+	
+	
+	
 	@Override
 	public boolean handleSensorMessage(ResourceNameEnum resourceName, SensorData data)
 	{

@@ -33,6 +33,8 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 	private IDataMessageListener dataMsgListener = null;
 	//Set 0 or 1 depends on the actual implementation
 	private int qosLevel = 1;
+	private static final String LED_ACTUATOR_CMD_TOPIC = "ledActuatorCmdTopic"; // Replace with the actual topic name
+
 	// constructors
 	/**
 	 * Default.
@@ -53,7 +55,6 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 			}
 		}
 	}
- 
 	// public methods
 	@Override
 	public boolean connectClient()
@@ -64,10 +65,9 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 		}
 		this.mqttClient.connectClient();
 		return this.mqttClient.isConnected();
-		
-		
-	}
 
+	}
+ 
 	
 	@Override
 	public boolean disconnectClient()
@@ -83,6 +83,13 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 	{
 		_Logger.info("Handling CSP subscriptions and device topic provisioninig...");
 		LedEnablementMessageListener ledListener = new LedEnablementMessageListener(this.dataMsgListener);
+		
+	    // The LED actuation topic might be constructed from a base topic prefix and a specific actuator name
+	    String ledActuatorCmdTopic = this.topicPrefix + ConfigConst.LED_ACTUATOR_NAME; // Assumes LED_ACTUATOR_NAME is the correct topic suffix
+
+	    // Subscribe to the LED actuation event topic
+	    this.mqttClient.subscribeToTopic(ledActuatorCmdTopic, this.qosLevel);
+
 		// topic may not exist yet, so create a 'response' actuation event with invalid value -
 		// this will create the relevant topic if it doesn't yet exist, which ensures
 		// the message listener (if coded correctly) will log a message but ignore the
@@ -91,30 +98,30 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 		ad.setAsResponse();
 		ad.setName(ConfigConst.LED_ACTUATOR_NAME);
 		ad.setValue((float) -1.0); // NOTE: this just needs to be an invalid actuation value
- 
 
+ 
 		String ledTopic = createTopicName(ledListener.getResource().getDeviceName(), ad.getName());
 		String adJson = DataUtil.getInstance().actuatorDataToJson(ad);
 		this.publishMessageToCloud(ledTopic,adJson);
-		
 		try {
 			Thread.sleep(30000);
 		}
 		catch (InterruptedException e ) {
-			
 		}
 		SystemPerformanceData sysPerfData = new SystemPerformanceData();
 		this.subscribeToCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE);
-		
 		try {
 			Thread.sleep(30000);
 		}
 		catch (InterruptedException e ) {
-			
 		}
 		this.sendEdgeDataToCloud(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData);
-		
 		this.mqttClient.subscribeToTopic(ledTopic, this.qosLevel, ledListener);
+	
+		
+		
+	
+	
 	}
 	@Override
 	public void onDisconnect()
@@ -197,7 +204,6 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 		}
 		return success;
 	}
- 
 	// private methods
 	private String createTopicName(ResourceNameEnum resource)
 	{
@@ -222,7 +228,6 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 		String topicName = createTopicName(resource) + "-" + itemName;
 		try {
 			_Logger.finest("Publishing payload value(s) to CSP: " + topicName);
- 
 			this.mqttClient.publishMessage(topicName, payload.getBytes(), this.qosLevel);
 			try {
 				Thread.sleep(1000);
@@ -293,5 +298,5 @@ public class CloudClientConnector implements ICloudClient, IConnectionListener
 			}
 		}
 	}
-
+ 
 }
