@@ -546,7 +546,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 
     			new ActuatorResponseMessageListener(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, this.dataMsgListener));
 
-    		_Logger.info("Subscribing to topic: " + ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE.getResourceName());
+    		/*_Logger.info("Subscribing to topic: " + ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE.getResourceName());
 
     		this.mqttClient.subscribe(
 
@@ -556,7 +556,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 
     			new ActuatorResponseMessageListener(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE, this.dataMsgListener));
 
-    		
+    		*/
     		_Logger.info("Subscribing to topic: " + ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE.getResourceName());
 
     		this.mqttClient.subscribe(
@@ -565,7 +565,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 
     			qos,
 
-    			new ActuatorResponseMessageListener(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, this.dataMsgListener));
+    			new SensorDataMessageListener(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, this.dataMsgListener));
 
     		_Logger.info("Subscribing to topic: " + ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE.getResourceName());
 
@@ -575,7 +575,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 
     			qos,
 
-    			new ActuatorResponseMessageListener(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, this.dataMsgListener));
+    			new SystemPerformanceDataMessageListener(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, this.dataMsgListener));
 
     	} catch (MqttException e) {
 
@@ -662,11 +662,11 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 
 		// NOTE: updated from Lab Module 07 - attempt to load clientID from configuration file
 
-		this.clientID =
+		this.clientID = MqttClient.generateClientId();
 
-			configUtil.getProperty(
+			//configUtil.getProperty(
 
-				ConfigConst.GATEWAY_DEVICE, ConfigConst.DEVICE_LOCATION_ID_KEY, MqttClient.generateClientId());
+				//ConfigConst.GATEWAY_DEVICE, ConfigConst.DEVICE_LOCATION_ID_KEY, MqttClient.generateClientId());
 
 		// these are specific to the MQTT connection which will be used during connect
 
