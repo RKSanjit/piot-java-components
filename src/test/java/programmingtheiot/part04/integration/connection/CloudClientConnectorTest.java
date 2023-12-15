@@ -1,12 +1,3 @@
-/**
-* 
-* This class is part of the Programming the Internet of Things
-* project, and is available via the MIT License, which can be
-* found in the LICENSE file at the top level of this repository.
-* 
-* Copyright (c) 2020 by Andrew D. King
-*/
- 
 package programmingtheiot.part04.integration.connection;
 import static org.junit.Assert.*;
 import java.util.List;
@@ -103,15 +94,15 @@ public class CloudClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.UbidotsMqttCloudClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
 	 */
-	//@Test
+	@Test
 	public void testPublishAndSubscribe()
 	{
 		//this.cloudClient.setDataMessageListener(new DefaultDataMessageListener());
 		//assertTrue(this.cloudClient.connectClient());
 		this.cloudClient.connectClient();
 		SensorData sensorData = new SensorData();
-		sensorData.setName(ConfigConst.TEMP_SENSOR_NAME);
-		sensorData.setValue(92.0f);
+		sensorData.setName(ConfigConst.PRESSURE_SENSOR_NAME);
+		sensorData.setValue(950);
 		SystemPerformanceData sysPerfData = new SystemPerformanceData();
 		sysPerfData.setCpuUtilization(34.7f);
 		sysPerfData.setMemoryUtilization(39.8f);
@@ -176,48 +167,7 @@ public class CloudClientConnectorTest
         waitForSeconds(2);
         ad.setValue(1);
         this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, ad);
-        waitForSeconds(2);
-        /*
-		SensorData sensorData = new SensorData();
-		sensorData.setName(ConfigConst.TEMP_SENSOR_NAME);
-		sensorData.setValue(92.0f);
-		SystemPerformanceData sysPerfData = new SystemPerformanceData();
-		sysPerfData.setCpuUtilization(34.7f);
-		sysPerfData.setMemoryUtilization(39.8f);
-		//assertTrue(this.cloudClient.subscribeToCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE));
-		this.cloudClient.subscribeToCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE);
-		try {
-			// sleep for a few seconds...
-			Thread.sleep(5000L);
-		} catch (Exception e) {
-			// ignore
-		}
-		//assertTrue(this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData));
-		//assertTrue(this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData));
-		this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, sensorData);
-		try {
-			// sleep for half a minute or so...
-			Thread.sleep(30000L);
-		} catch (Exception e) {
-			// ignore
-		}
-		this.cloudClient.sendEdgeDataToCloud(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, sysPerfData);
-		try {
-			// sleep for half a minute or so...
-			Thread.sleep(30000L);
-		} catch (Exception e) {
-			// ignore
-		}
-		//assertTrue(this.cloudClient.unsubscribeFromCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE));
-		this.cloudClient.unsubscribeFromCloudEvents(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE);
-		try {
-			// sleep for a minute or so...
-			Thread.sleep(50000L);
-		} catch (Exception e) {
-			// ignore
-		}
-		*/
-		//assertTrue(this.cloudClient.disconnectClient());
+ 
 		this.cloudClient.disconnectClient();
 	}
 	private void waitForSeconds(int seconds) {

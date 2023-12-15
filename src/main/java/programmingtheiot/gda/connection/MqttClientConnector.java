@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
 import javax.net.ssl.SSLSocketFactory;
- 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
@@ -50,12 +49,12 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 	private boolean enableEncryption = true;
 	private boolean useCleanSession = false;
 	private boolean enableAutoReconnect = true;
-	private boolean useCloudGatewayConfig = true;
+	private boolean useCloudGatewayConfig = false;
 	private String  clientID = null;
 	private String  brokerAddr = null;
 	private String  host = ConfigConst.DEFAULT_HOST;
 	private String  protocol = ConfigConst.DEFAULT_MQTT_PROTOCOL;
-	private int     port = ConfigConst.DEFAULT_MQTT_SECURE_PORT;
+	private int     port = ConfigConst.DEFAULT_MQTT_PORT;
 	private int     brokerKeepAlive = ConfigConst.DEFAULT_KEEP_ALIVE;
 	private static final Logger _Logger =
 		Logger.getLogger(MqttClientConnector.class.getName());
@@ -79,8 +78,8 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 							DataUtil.getInstance().jsonToActuatorData(new String(message.getPayload()));
 				// optionally, log a message indicating data was received
 				_Logger.info("Received ActuatorData response: " + actuatorData.getValue());
-
  
+
 				if (this.dataMsgListener != null) {
 					this.dataMsgListener.handleActuatorCommandResponse(resource, actuatorData);
 				}
@@ -129,7 +128,6 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
             }
         }
     }
- 
 		public MqttClientConnector()
 		{
 			this(false);
@@ -159,7 +157,6 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		}
 		return false;
 	}
- 
 		// Disconnect from MQTT broker
 		@Override
 		public boolean disconnectClient()
@@ -180,7 +177,6 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 			}
 			return false;
 		}
- 
 		// Check if client is connected
 		public boolean isConnected()
 		{
@@ -213,12 +209,10 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 		    // For now, return false
 			return publishMessage(topicName.getResourceName(), msg.getBytes(), qos);
 		}
- 
 		// Subscribe to a topic
 		@Override
 		public boolean subscribeToTopic(ResourceNameEnum topicName, int qos)
 		{
- 
 			if (topicName == null) {
 				_Logger.warning("Resource is null. Unable to subscribe to topic: " + this.brokerAddr);
 				return false;
@@ -252,7 +246,6 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 			}
 			return unsubscribeFromTopic(topicName.getResourceName());
 		}
- 
 		// Set a data message listener
 		@Override
 		public boolean setDataMessageListener(IDataMessageListener listener)
@@ -264,17 +257,20 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
 			return false;
 		}
 		// MQTT Callback methods
-
  
+
     @Override
     public void connectComplete(boolean reconnect, String serverURI) {
        // _Logger.info("Connection to broker is complete. Reconnect: " + reconnect + ", Server URI: " + serverURI);
     	_Logger.info("MQTT connection successful (is reconnect = " + reconnect + "). Broker: " + serverURI);
     	int qos = 1;
     	_Logger.info("Use cloud gatewayConfig set to: "+ this.useCloudGatewayConfig);
-
+ 
     	if (! this.useCloudGatewayConfig) {
     		try {
+    			_Logger.info("****************");
+    	    	_Logger.info("CONNECT COMPLETE RUNNING");
+    	    	_Logger.info("****************");
     			_Logger.info("Subscribing to topic: " + ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE.getResourceName());
     			this.mqttClient.subscribe(
     				ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE.getResourceName(),
@@ -283,7 +279,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
     		} catch(MqttException e){
     			_Logger.warning("Failed to subscribe to CDA actuator response  topic.");
     		}
-
+ 
     		try {
     			_Logger.info("Subscribing to topic: " + ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE.getResourceName());
         		this.mqttClient.subscribe(
@@ -293,7 +289,7 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
     		} catch (MqttException e) {
     			_Logger.warning("Failed to subscribe to CDA sensor data topic.");
     		}
-
+ 
     		try {
         		_Logger.info("Subscribing to topic: " + ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE.getResourceName());
         		this.mqttClient.subscribe(
@@ -303,14 +299,22 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
     		} catch (MqttException e) {
         		_Logger.warning("Failed to subscribe to CDA actuator response topic.");
         	}
+    		try {
+    			_Logger.info("Subscribing to topic: " + ResourceNameEnum.GDA_SYSTEM_PERF_MSG_RESOURCE.getResourceName());
+        		this.mqttClient.subscribe(
+        			ResourceNameEnum.GDA_SYSTEM_PERF_MSG_RESOURCE.getResourceName(),
+        			qos,
+        			new SensorDataMessageListener(ResourceNameEnum.GDA_SYSTEM_PERF_MSG_RESOURCE, this.dataMsgListener));
+    		} catch (MqttException e) {
+    			_Logger.warning("Failed to subscribe to CDA sensor data topic.");
+    		}
     	if (this.connListener != null) {
     		this.connListener.onConnect();
     	}}
     }
-
-
-
-
+ 
+ 
+ 
     @Override
     public void connectionLost(Throwable t) {
         _Logger.warning("Connection to broker is lost. Cause: " + t.getMessage());
@@ -323,7 +327,6 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         _Logger.info("Message arrived on topic: " + topic + ". Payload: " + new String(message.getPayload()));
     }
- 
 	// private methods
 	/**
 	 * Called by the constructor to set the MQTT client parameters to be used for the connection.
@@ -530,5 +533,4 @@ public class MqttClientConnector implements IPubSubClient, MqttCallbackExtended
     		_Logger.warning("No connection listener specified. Ignoring.");
     	}
     }
- 
 }
