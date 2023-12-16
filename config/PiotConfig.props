@@ -1,4 +1,4 @@
-[4:45 PM] Sonali Mondal
+
 #####
 
 # Configuration file for the Gateway Device App (GDA)
@@ -88,7 +88,7 @@ enableCrypt    = False
  
 credFile       = ./certs/PiotMqttCred.props
 
-certFile       = ./certs/server.crt
+certFile       = /home/sanjitrk/mosquitto-2.0.18/certs/server.crt
 
 host           = localhost
 
@@ -142,7 +142,7 @@ enableLogging           = True
 
 pollCycleSecs           = 60
 
-enableMqttClient        = False
+enableMqttClient        = True
 
 enableCoapServer        = False
 

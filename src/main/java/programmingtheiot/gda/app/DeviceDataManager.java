@@ -25,7 +25,7 @@ import programmingtheiot.gda.connection.CloudClientConnector;
 import programmingtheiot.gda.connection.CoapServerGateway;
 import programmingtheiot.gda.connection.ICloudClient;
 import programmingtheiot.gda.connection.IPersistenceClient;
-import programmingtheiot.gda.connection.IPubSubClient; 
+import programmingtheiot.gda.connection.IPubSubClient;
 import programmingtheiot.gda.connection.IRequestResponseClient;
 import programmingtheiot.gda.connection.MqttClientConnector;
 import programmingtheiot.gda.connection.RedisPersistenceAdapter;
@@ -41,9 +41,9 @@ public class DeviceDataManager implements IDataMessageListener
 	private static final Logger _Logger =
 		Logger.getLogger(DeviceDataManager.class.getName());
 	// private var's
-	private boolean enableMqttClient = false;
+	private boolean enableMqttClient = true;
 	private boolean enableCoapServer = false;
-	private boolean enableCloudClient = true;
+	private boolean enableCloudClient = false;
 	private boolean enableSmtpClient = false;
 	private boolean enablePersistenceClient = false;
 	private boolean enableSystemPerf = true;
@@ -65,7 +65,7 @@ public class DeviceDataManager implements IDataMessageListener
 	private IDataMessageListener dataMsgListener = null;
 	private int qosLevel = 1;
 	// TODO: Load these from PiotConfig.props
-	private long    humidityMaxTimePastThreshold = 300; // seconds
+	private long    humidityMaxTimePastThreshold = 10; // seconds
 	private float   nominalHumiditySetting   = 40.0f;
 	private float   triggerHumidifierFloor   = 30.0f;
 	private float   triggerHumidifierCeiling = 50.0f;
@@ -135,7 +135,7 @@ public class DeviceDataManager implements IDataMessageListener
 			return false;
 		}
 	}
-/*	@Override
+	@Override
 	public boolean handleIncomingMessage(ResourceNameEnum resourceName, String msg)
 	{
 		if (resourceName != null && msg != null) {
@@ -166,69 +166,13 @@ public class DeviceDataManager implements IDataMessageListener
 		} else {
 			_Logger.warning("Incoming message has no data. Ignoring for resource: " + resourceName);
 		}
- 
 		if (msg != null) {
 			_Logger.info("Handling incoming generic message: " + msg);
 			return true;
-		} 
-		
-		
-		
-		else {
+		} else {
 			return false;
 		}
-	}*/
-	
-	
-	@Override
-	public boolean handleIncomingMessage(ResourceNameEnum resourceName, String msg) {
-	    if (resourceName != null && msg != null) {
-	        try {
-	            if (resourceName == ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE) {
-	                _Logger.info("Handling incoming ActuatorData message: " + msg);
-	                
-	                ActuatorData actuatorData = DataUtil.getInstance().jsonToActuatorData(msg);
-	                
-	                if (actuatorData != null && actuatorData.getTypeID() == ConfigConst.LED_ACTUATOR_TYPE) {
-	                    // Determine the action (ON or OFF) based on the actuator command
-	                    if (actuatorData.getCommand() == ConfigConst.ON_COMMAND) {
-	                        actuatorData.setStateData("ON");
-	                    } else if (actuatorData.getCommand() == ConfigConst.OFF_COMMAND) {
-	                        actuatorData.setStateData("OFF");
-	                    }
-
-	                    // Convert the updated ActuatorData back to JSON
-	                    String jsonData = DataUtil.getInstance().actuatorDataToJson(actuatorData);
-
-	                    // Publish the ActuatorData to the MQTT broker
-	                    if (this.mqttClient != null) {
-	                        _Logger.fine("Publishing actuator data to MQTT broker: " + jsonData);
-	                        return this.mqttClient.publishMessage(resourceName, jsonData, 0);
-	                    }
-	                } else {
-	                    _Logger.warning("Received message is not for LED Actuator. Ignoring.");
-	                    return false;
-	                }
-	            } else {
-	                // Logic for handling other types of messages
-	                _Logger.info("Handling incoming generic message: " + msg);
-	                return true; // Adjust based on how you handle other messages
-	            }
-	        } catch (Exception e) {
-	            _Logger.log(Level.WARNING, "Failed to process incoming message for resource: " + resourceName, e);
-	            return false;
-	        }
-	    } else {
-	        _Logger.warning("Incoming message has no data. Ignoring for resource: " + resourceName);
-	        return false;
-	    }
-	    
-	    return true;
 	}
-
-	
-	
-	
 	@Override
 	public boolean handleSensorMessage(ResourceNameEnum resourceName, SensorData data)
 	{
@@ -267,9 +211,9 @@ public class DeviceDataManager implements IDataMessageListener
 			}
 			if (this.cloudClient != null) {
 				// TODO: handle any failures
-				if (this.cloudClient.sendEdgeDataToCloud(resourceName, data)) {
-					_Logger.fine("Sent SystemPerformanceData upstream to CSP.");
-				}
+				//if (this.cloudClient.sendEdgeDataToCloud(resourceName, data)) {
+					//_Logger.fine("Sent SystemPerformanceData upstream to CSP.");
+				//}
 			}
 			return true;
 		} else {
@@ -285,64 +229,64 @@ public class DeviceDataManager implements IDataMessageListener
 		}
 	}
 	public void startManager()
-	{
-		if (this.sysPerfMgr != null) {
-			_Logger.info("Starting DeviceDataManager...");
-			this.sysPerfMgr.startManager();
-		}
-		if (this.mqttClient != null) {
-			if (this.mqttClient.connectClient()) {
-				_Logger.info("Successfully connected MQTT client to broker.");
-				// add necessary subscriptions
-				// TODO: read this from the configuration file
-				int qos = ConfigConst.DEFAULT_QOS;
-				// TODO: check the return value for each and take appropriate action
-				this.mqttClient.subscribeToTopic(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE, qos);
-				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, qos);
-				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, qos);
-				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, qos);
-			} else {
-				_Logger.severe("Failed to connect MQTT client to broker.");
-				// TODO: take appropriate action
-			}
-		}
-		if (this.cloudClient != null) {
-			if (this.cloudClient.connectClient()) {
-				_Logger.info("Successfully connected MQTT client to broker.");
-				// add necessary subscriptions
-				// TODO: read this from the configuration file
-				int qos = ConfigConst.DEFAULT_QOS;
-				// TODO: check the return value for each and take appropriate action
-				try {
-					// sleep for half a minute or so...
-					Thread.sleep(30000L);
-				} catch (Exception e) {
-					// ignore
-				}
-				this.cloudClient.subscribeToCloudEvents(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE);
-				
-				try {
-					// sleep for half a minute or so...
-					Thread.sleep(30000L);
-				} catch (Exception e) {
-					// ignore
-				}
-				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, qos);
-				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, qos);
-				//this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, qos);
-			} else {
-				_Logger.severe("Failed to connect cloud client to broker.");
-				// TODO: take appropriate action
-			}
-		}
-		if (this.enableCoapServer && this.coapServer != null) {
-			if (this.coapServer.startServer()) {
-				_Logger.info("CoAP server started.");
-			} else {
-				_Logger.severe("Failed to start CoAP server. Check log file for details.");
-			}
-		}
-	}
+    {
+        if (this.sysPerfMgr != null) {
+            _Logger.info("Starting DeviceDataManager...");
+            this.sysPerfMgr.startManager();
+        }
+        if (this.mqttClient != null) {
+            if (this.mqttClient.connectClient()) {
+            	_Logger.info("***************I AM HERE****");
+                _Logger.info("Successfully connected MQTT client to broker.");
+                // add necessary subscriptions
+                // TODO: read this from the configuration file
+                // int qos = ConfigConst.DEFAULT_QOS;
+                // TODO: check the return value for each and take appropriate action
+                // this.mqttClient.subscribeToTopic(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE, qos);
+                //this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, qos);
+                //this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, qos);
+                //this.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, qos);
+            } else {
+                _Logger.severe("Failed to connect MQTT client to broker.");
+                // TODO: take appropriate action
+            }
+        }
+        if (this.cloudClient != null) {
+            if (this.cloudClient.connectClient()) {
+                _Logger.info("Successfully connected MQTT client to broker.");
+                // add necessary subscriptions
+                // TODO: read this from the configuration file
+                // int qos = ConfigConst.DEFAULT_QOS;
+                // // TODO: check the return value for each and take appropriate action
+                // try {
+                //  // sleep for half a minute or so...
+                //  Thread.sleep(30000L);
+                // } catch (Exception e) {
+                //  // ignore
+                // }
+                // this.cloudClient.subscribeToCloudEvents(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE);
+                // try {
+                //  // sleep for half a minute or so...
+                //  Thread.sleep(30000L);
+                // } catch (Exception e) {
+                //  // ignore
+                // }
+                //this.mqttClient.ToTopic(ResourceNameEnum.CDA_ACTUATOR_RESPONSE_RESOURCE, qos);
+                //this.mqttClient.ToTopic(ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, qos);
+                //this.mqttClient.ToTopic(ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, qos);
+            } else {
+                _Logger.severe("Failed to connect cloud client to broker.");
+                // TODO: take appropriate action
+            }
+        }
+        if (this.enableCoapServer && this.coapServer != null) {
+            if (this.coapServer.startServer()) {
+                _Logger.info("CoAP server started.");
+            } else {
+                _Logger.severe("Failed to start CoAP server. Check log file for details.");
+            }
+        }
+    }
 	public void stopManager()
 	{
 		if (this.sysPerfMgr != null) {
@@ -375,7 +319,6 @@ public class DeviceDataManager implements IDataMessageListener
 				// ignore
 			}
 			this.cloudClient.unsubscribeFromCloudEvents(ResourceNameEnum.GDA_MGMT_STATUS_MSG_RESOURCE);
-			
 			try {
 				// sleep for half a minute or so...
 				Thread.sleep(30000L);
@@ -397,7 +340,6 @@ public class DeviceDataManager implements IDataMessageListener
 			}
 		}
 	}
- 
 	// private methods
 	/**
 	 * Initializes the enabled connections. This will NOT start them, but only create the
@@ -411,7 +353,6 @@ public class DeviceDataManager implements IDataMessageListener
 			handleHumiditySensorAnalysis(resource, data);
 		}
 	}
- 
 	private void handleHumiditySensorAnalysis(ResourceNameEnum resource, SensorData data)
 	{
 		//
@@ -421,12 +362,12 @@ public class DeviceDataManager implements IDataMessageListener
 		boolean isLow  = data.getValue() < this.triggerHumidifierFloor;
 		boolean isHigh = data.getValue() > this.triggerHumidifierCeiling;
 		if (isLow || isHigh) {
-			_Logger.fine("Humidity data from CDA exceeds nominal range.");
+			_Logger.info("Humidity data from CDA exceeds nominal range.");
 			if (this.latestHumiditySensorData == null) {
 				// set properties then exit - nothing more to do until the next sample
 				this.latestHumiditySensorData = data;
 				this.latestHumiditySensorTimeStamp = getDateTimeFromData(data);
-				_Logger.fine(
+				_Logger.info(
 					"Starting humidity nominal exception timer. Waiting for seconds: " +
 					this.humidityMaxTimePastThreshold);
 				return;
@@ -435,7 +376,7 @@ public class DeviceDataManager implements IDataMessageListener
 				long diffSeconds =
 					ChronoUnit.SECONDS.between(
 						this.latestHumiditySensorTimeStamp, curHumiditySensorTimeStamp);
-				_Logger.fine("Checking Humidity value exception time delta: " + diffSeconds);
+				_Logger.info("Checking Humidity value exception time delta: " + diffSeconds);
 				if (diffSeconds >= this.humidityMaxTimePastThreshold) {
 					ActuatorData ad = new ActuatorData();
 					ad.setName(ConfigConst.HUMIDIFIER_ACTUATOR_NAME);
@@ -485,7 +426,6 @@ public class DeviceDataManager implements IDataMessageListener
 			}
 		}
 	}
- 
 	private void sendActuatorCommandtoCda(ResourceNameEnum resource, ActuatorData data)
 	{
 		if (this.actuatorDataListener != null) {
