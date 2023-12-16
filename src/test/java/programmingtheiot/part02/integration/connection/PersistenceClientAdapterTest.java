@@ -81,7 +81,7 @@ public class PersistenceClientAdapterTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.RedisPersistenceAdapter#connectClient()}.
 	 */
-	@Test
+	//@Test
 	public void testConnectClient()
 	{
 		fail("Not yet implemented"); // TODO
@@ -90,7 +90,7 @@ public class PersistenceClientAdapterTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.RedisPersistenceAdapter#disconnectClient()}.
 	 */
-	@Test
+	//@Test
 	public void testDisconnectClient()
 	{
 		fail("Not yet implemented"); // TODO

@@ -59,7 +59,7 @@ public class CloudClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.UbidotsMqttCloudClientConnector#connectClient()}.
 	 */
-	//@Test
+	@Test
 	public void testCloudClientConnectAndDisconnect() {
 	    this.cloudClient.setDataMessageListener(new DefaultDataMessageListener());
 	    try {
@@ -86,7 +86,7 @@ public class CloudClientConnectorTest
 	/**
 	 * Test method
 	 */
-	//@Test
+	@Test
 	public void testIntegratedCloudClientConnectAndDisconnect()
 	{
 		DeviceDataManager ddm = new DeviceDataManager();
@@ -103,7 +103,7 @@ public class CloudClientConnectorTest
 	/**
 	 * Test method for {@link programmingtheiot.gda.connection.UbidotsMqttCloudClientConnector#publishMessage(programmingtheiot.common.ResourceNameEnum, java.lang.String, int)}.
 	 */
-	//@Test
+	@Test
 	public void testPublishAndSubscribe()
 	{
 		//this.cloudClient.setDataMessageListener(new DefaultDataMessageListener());
@@ -112,6 +112,8 @@ public class CloudClientConnectorTest
 		SensorData sensorData = new SensorData();
 		sensorData.setName(ConfigConst.TEMP_SENSOR_NAME);
 		sensorData.setValue(92.0f);
+		sensorData.setName(ConfigConst.PRESSURE_SENSOR_NAME);
+		sensorData.setValue(400.0f);
 		SystemPerformanceData sysPerfData = new SystemPerformanceData();
 		sysPerfData.setCpuUtilization(34.7f);
 		sysPerfData.setMemoryUtilization(39.8f);
